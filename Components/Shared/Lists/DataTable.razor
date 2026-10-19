@@ -1,0 +1,17 @@
+
+<div class="table-responsive">
+
+    <table class="table table-hover table-striped align-middle">
+
+        @ChildContent
+
+    </table>
+
+</div>
+
+@code{
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+}

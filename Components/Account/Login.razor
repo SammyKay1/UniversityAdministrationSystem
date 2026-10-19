@@ -1,0 +1,120 @@
+@using UniversityAdministrationSystem.Components.Shared.Buttons
+@using UniversityAdministrationSystem.Components.Shared.Layout
+@using Microsoft.AspNetCore.Authorization
+
+@page "/login"
+@layout Layout.LoginLayout
+@attribute [AllowAnonymous]
+
+@inject AuthenticationService AuthenticationService
+@inject NavigationManager Navigation
+
+<PageHeader Title="Sign In" />
+
+
+<div class="login-panel">
+    <div class="login-heading">
+        <div class="login-heading__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m22 10-10-5-10 5 10 5 10-5Z" />
+                <path d="M6 12v5c3.3 2.5 8.7 2.5 12 0v-5" />
+                <path d="M22 10v6" />
+            </svg>
+        </div>
+
+        <h1 class="login-heading__title">
+            University Administration
+        </h1>
+
+        <p class="login-heading__description">
+            Sign in to access your account and manage your university activities.
+        </p>
+    </div>
+
+    @if (HasLoginError)
+    {
+        <div class="alert alert-danger login-error" role="alert">
+            <strong>Sign-in failed.</strong>
+            <p class="mb-0">
+                Invalid email or password. Please check your
+                credentials and try again.
+            </p>
+        </div>
+    }
+
+    <div class="login-form-container">
+        <PageCard>
+            <form method="post" action="/account/login">
+            <AntiforgeryToken />
+
+                <div class="mb-3">
+                    <label for="login-email" class="form-label">
+                        Email
+                    </label>
+
+                    <input id="login-email" type="email" name="Email" class="form-control" autocomplete="username"
+                           required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="login-password" class="form-label">
+                        Password
+                    </label>
+
+                    <input id="login-password" type="password" name="Password" class="form-control"
+                           autocomplete="current-password" required />
+                </div>
+
+                <div class="form-check mb-3">
+                    <input id="login-remember-me" type="checkbox" name="RememberMe" value="true"
+                           class="form-check-input" />
+
+                    <label for="login-remember-me" class="form-check-label">
+                        Remember Me
+                    </label>
+                </div>
+
+                <LoadingButton Text="Sign In" LoadingText="Signing In..." Loading="@loggingIn" />
+
+            </form>
+        </PageCard>
+
+    </div>
+</div>
+
+@code {
+    private LoginDto login = new();
+
+    private bool loggingIn;
+
+
+    [SupplyParameterFromQuery(Name = "error")]
+    public bool HasLoginError { get; set; }
+
+
+    private async Task UserLoginAsync()
+    {
+        loggingIn = true;
+
+        try
+        {
+            var result =
+                await AuthenticationService.LoginAsync(login);
+
+            if (result.Success)
+            {
+                Navigation.NavigateTo("/");
+                return;
+            }
+
+            // TODO:
+            // Show Notification
+            // result.ErrorMessage
+        }
+        finally
+        {
+            loggingIn = false;
+        }
+    }
+}

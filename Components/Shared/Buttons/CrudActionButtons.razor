@@ -1,0 +1,28 @@
+
+<button class="btn btn-sm btn-info"  @onclick="OnView">
+    View
+</button>
+
+
+<button class="btn btn-sm btn-warning"  @onclick="OnEdit">
+    Edit
+</button>
+
+
+<button class="btn btn-sm btn-danger"   @onclick="OnDelete">
+    Delete
+</button>
+
+
+@code {
+
+[Parameter]
+public EventCallback OnView {get;set;}
+
+[Parameter]
+public EventCallback OnEdit {get;set;}
+
+[Parameter]
+public EventCallback OnDelete {get;set;}
+
+}

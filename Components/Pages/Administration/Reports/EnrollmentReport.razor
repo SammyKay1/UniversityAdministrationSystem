@@ -1,0 +1,457 @@
+@page "/reports/enrollments"
+
+@using UniversityAdministrationSystem.Components.Shared
+@using UniversityAdministrationSystem.Components.Shared.Feedback
+@using UniversityAdministrationSystem.Components.Shared.Layout
+@using UniversityAdministrationSystem.Components.Shared.Reports
+
+@inject ReportService ReportService
+@inject NotificationService Notification
+
+@inject DepartmentService DepartmentService
+@inject CourseService CourseService
+
+@attribute [Authorize(Policy = Permissions.Reports.View)]
+
+
+<PageHeader Title="Enrollment Report" />
+
+<NotificationContainer />
+
+
+<ReportsToolbar Title="Report Filters" Description="Filter enrollment records by department, course, and status."
+                IsLoading="loading" OnReset="ResetFilters" OnRefresh="LoadReport">
+
+    <div class="col-md-4">
+
+        <label class="form-label">
+            Department
+        </label>
+
+        <InputSelect class="form-select" @bind-Value="selectedDepartmentId" @bind-Value:after="ApplyFilters">
+
+            <option value="0">
+                All Departments
+            </option>
+
+            @foreach (var department in departments)
+            {
+                <option value="@department.Id">
+                    @department.Name
+                </option>
+            }
+
+        </InputSelect>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <label class="form-label">
+            Course
+        </label>
+
+        <InputSelect class="form-select" @bind-Value="selectedCourseId" @bind-Value:after="ApplyFilters">
+
+            <option value="0">
+                All Courses
+            </option>
+
+            @foreach (var course in courses)
+            {
+                <option value="@course.Id">
+                    @course.CourseCode - @course.CourseName
+                </option>
+            }
+
+        </InputSelect>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <label class="form-label">
+            Status
+        </label>
+
+        <InputSelect class="form-select" @bind-Value="selectedStatus" @bind-Value:after="ApplyFilters">
+
+            <option value="">
+                All Statuses
+            </option>
+
+            @foreach (var status in Enum.GetValues<EnrollmentStatus>())
+            {
+                <option value="@status">
+                    @status
+                </option>
+            }
+
+        </InputSelect>
+
+    </div>
+
+</ReportsToolbar>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body">
+
+                <p class="text-muted mb-1">
+                    Total Enrollments
+                </p>
+
+                <h3 class="fw-bold mb-0">
+                    @TotalEnrollments
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body">
+
+                <p class="text-muted mb-1">
+                    Active
+                </p>
+
+                <h3 class="fw-bold text-primary mb-0">
+                    @ActiveEnrollments
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body">
+
+                <p class="text-muted mb-1">
+                    Completed
+                </p>
+
+                <h3 class="fw-bold text-success mb-0">
+                    @CompletedEnrollments
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body">
+
+                <p class="text-muted mb-1">
+                    Dropped
+                </p>
+
+                <h3 class="fw-bold text-danger mb-0">
+                    @DroppedEnrollments
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<PageCard>
+
+    <div class="d-flex justify-content-between
+        align-items-center mb-4">
+
+        <div>
+
+            <h5 class="mb-1">
+                Enrollment Activity
+            </h5>
+
+            <p class="text-muted mb-0">
+                Enrollment status across all courses.
+            </p>
+
+        </div>
+    </div>
+
+    @if (loading)
+    {
+        <div class="text-center py-5">
+
+            <div class="spinner-border">
+            </div>
+
+            <p class="text-muted mt-3">
+                Loading enrollment report...
+            </p>
+
+        </div>
+    }
+    else if (!report.Any())
+    {
+        <div class="text-center py-5">
+
+            <i class="bi bi-journal-x fs-1 text-muted"></i>
+
+            <h5 class="mt-3">
+                No enrollment data
+            </h5>
+
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Course</th>
+
+                        <th>Department</th>
+
+                        <th class="text-center">
+                            Active
+                        </th>
+
+                        <th class="text-center">
+                            Completed
+                        </th>
+
+                        <th class="text-center">
+                            Dropped
+                        </th>
+
+                        <th class="text-center">
+                            Total
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @foreach (var item in filteredEnrollmentReport)
+                    {
+                        <tr>
+
+                            <td>
+
+                                <div class="fw-semibold">
+                                    @item.CourseCode
+                                </div>
+
+                                <small class="text-muted">
+                                    @item.CourseName
+                                </small>
+
+                            </td>
+
+
+                            <td>
+                                @item.DepartmentName
+                            </td>
+
+
+                            <td class="text-center">
+
+                                <span class="badge
+                                    bg-primary-subtle
+                                    text-primary">
+
+                                    @item.ActiveCount
+
+                                </span>
+
+                            </td>
+
+
+                            <td class="text-center">
+
+                                <span class="badge
+                                    bg-success-subtle
+                                    text-success">
+
+                                    @item.CompletedCount
+
+                                </span>
+
+                            </td>
+
+
+                            <td class="text-center">
+
+                                <span class="badge
+                                    bg-danger-subtle
+                                    text-danger">
+
+                                    @item.DroppedCount
+
+                                </span>
+
+                            </td>
+
+
+                            <td class="text-center fw-semibold">
+
+                                @item.TotalCount
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+</PageCard>
+
+
+@code {
+
+    private IEnumerable<EnrollmentReportDto> report = [];
+
+    private IEnumerable<DepartmentLookUpDto> departments = [];
+    private IEnumerable<CourseLookupDto> courses = [];
+
+    //private IEnumerable<EnrollmentReportDto> enrollmentReport = [];
+    private IEnumerable<EnrollmentReportDto> filteredEnrollmentReport = [];
+
+    private int selectedDepartmentId;
+    private int selectedCourseId;
+    private EnrollmentStatus? selectedStatus;
+
+    
+
+
+    private bool loading;
+
+
+    private int TotalEnrollments =>
+        report.Sum(x => x.TotalCount);
+
+
+    private int ActiveEnrollments =>
+        report.Sum(x => x.ActiveCount);
+
+
+    private int CompletedEnrollments =>
+        report.Sum(x => x.CompletedCount);
+
+
+    private int DroppedEnrollments =>
+        report.Sum(x => x.DroppedCount);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        departments = await DepartmentService.GetDepartmentsAsync();
+
+        courses = await CourseService.GetLookupAsync();
+
+        await LoadReport();
+    }
+
+
+    private async Task LoadReport()
+    {
+        loading = true;
+
+        try
+        {
+            report = await ReportService.GetEnrollmentReportAsync();
+
+            ApplyFilters();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            Notification.Error(
+                "Unable to load the enrollment report.");
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void ApplyFilters()
+    {
+        IEnumerable<EnrollmentReportDto> query = report;
+
+        if (selectedDepartmentId > 0)
+        {
+            query = query.Where(x =>
+                x.DepartmentId == selectedDepartmentId);
+        }
+
+        if (selectedCourseId > 0)
+        {
+            query = query.Where(x =>
+                x.CourseId == selectedCourseId);
+        }
+
+        if (selectedStatus.HasValue)
+        {
+            query = selectedStatus.Value switch
+            {
+                EnrollmentStatus.Active =>    query.Where(x => x.ActiveCount > 0),
+
+                EnrollmentStatus.Completed => query.Where(x => x.CompletedCount > 0),
+
+                EnrollmentStatus.Dropped =>  query.Where(x => x.DroppedCount > 0),
+
+                _ => query
+            };
+        }
+
+        filteredEnrollmentReport = query.ToList();
+    }
+
+    private void ResetFilters()
+    {
+        selectedDepartmentId = 0;
+        selectedCourseId = 0;
+        selectedStatus = null;
+
+        ApplyFilters();
+    }
+
+}

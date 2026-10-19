@@ -1,0 +1,100 @@
+
+.topbar-user-wrapper {
+    position: relative;
+}
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    border: none;
+    background: transparent;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.topbar-user:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.user-info {
+    margin-left: 10px;
+    text-align: left;
+}
+
+.user-name {
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.user-role {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.topbar-user-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 220px;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    padding: 6px 0;
+    z-index: 1000;
+}
+
+.topbar-menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    background: transparent;
+    text-decoration: none;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.topbar-menu-item:hover {
+    background: #f8f9fa;
+}
+
+.topbar-menu-divider {
+    height: 1px;
+    background: #dee2e6;
+    margin: 6px 0;
+}
+
+/* Mobile responsive */
+@media (max-width: 767.98px) {
+    .topbar-user-menu {
+        right: -10px;
+        width: 200px;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+}
+
+/* Tablet responsive */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+    .topbar-user-menu {
+        right: 0;
+    }
+}

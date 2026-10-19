@@ -1,0 +1,66 @@
+
+@if (Visible)
+{
+    <div class="modal fade show d-block"   tabindex="-1"  style="background-color: rgba(0,0,0,.5);">
+
+        <div class="modal-dialog @SizeClass">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        @Title
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            @onclick="Close">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    @ChildContent
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public bool Visible { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Size { get; set; } = "medium";
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    private string SizeClass => 
+        Size.ToLowerInvariant() switch
+        {
+            "small" => "modal-sm",
+            "large" => "modal-lg",
+            "extra-large" => "modal-xl",
+            _ => string.Empty
+        };
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+}

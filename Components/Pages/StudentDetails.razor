@@ -1,0 +1,14 @@
+
+@page "/student/{Id:int}"
+
+
+<h2>Student Details</h2>
+
+<p>Student ID: @Id</p>
+
+
+
+@code{
+    [Parameter]
+    public int Id{ get; set; }
+}

@@ -1,0 +1,427 @@
+Application/DTOs/Account/ProfileDto.cs:16: new blank line at EOF.
+Application/DTOs/Administration/PermissionDto.cs:4: trailing whitespace.
+[32m+[m[32m    public int Id { get; set; }[m[41m [m
+Components/Account/Login.razor:34: trailing whitespace.
+[32m+[m[41m    [m
+Components/Account/Login.razor:91: trailing whitespace.
+[32m+[m[41m    [m
+Components/App.razor:23: trailing whitespace.
+[32m+[m[41m    [m
+Components/App.razor:27: new blank line at EOF.
+Components/Layout/ReconnectModal.razor:32: new blank line at EOF.
+Components/Layout/Sidebar.razor:55: trailing whitespace.
+[32m+[m[41m        [m
+Components/Layout/Sidebar.razor:183: trailing whitespace.
+[32m+[m[41m                    [m
+Components/Layout/Sidebar.razor:211: trailing whitespace.
+[32m+[m[41m                        [m
+Components/Layout/Sidebar.razor:297: trailing whitespace.
+[32m+[m[32m                                <span>Permissions</span> *@[m[41m [m
+Components/Layout/Topbar.razor:113: trailing whitespace.
+[32m+[m[41m                    [m
+Components/Pages/About.razor:3: new blank line at EOF.
+Components/Pages/Administration/Reports/DepartmentReport.razor:201: trailing whitespace.
+[32m+[m[32m        </div>[m[41m        [m
+Components/Pages/Administration/Reports/DepartmentReport.razor:241: trailing whitespace.
+[32m+[m[41m        [m
+Components/Pages/Administration/Reports/DepartmentReport.razor:329: trailing whitespace.
+[32m+[m[41m  [m
+Components/Pages/Administration/Reports/EnrollmentReport.razor:203: trailing whitespace.
+[32m+[m[41m        [m
+Components/Pages/Administration/Reports/EnrollmentReport.razor:363: trailing whitespace.
+[32m+[m[41m    [m
+Components/Pages/Administration/Users/Create.razor:274: trailing whitespace.
+[32m+[m[41m                [m
+Components/Pages/Administration/Users/Edit.razor:161: trailing whitespace.
+[32m+[m[41m                        [m
+Components/Pages/Administration/Users/Edit.razor:165: trailing whitespace.
+[32m+[m[41m                        [m
+Components/Pages/Counter.razor:20: new blank line at EOF.
+Components/Pages/Courses/CourseDetails.razor:153: trailing whitespace.
+[32m+[m[32m    }[m[41m  [m
+Components/Pages/Error.razor:37: new blank line at EOF.
+Components/Pages/Home.razor:13: trailing whitespace.
+[32m+[m[32m<NavLink href="/students">Go to Students</NavLink>[m[41m [m
+Components/Pages/StudentForm.razor:12: trailing whitespace.
+[32m+[m[41m    [m
+Components/Pages/StudentForm.razor:19: trailing whitespace.
+[32m+[m[41m   [m
+Components/Pages/StudentForm.razor:26: trailing whitespace.
+[32m+[m[41m    [m
+Components/Pages/StudentForm.razor:34: trailing whitespace.
+[32m+[m[41m [m
+Components/Pages/StudentForm.razor:57: trailing whitespace.
+[32m+[m[41m        [m
+Components/Pages/StudentForm.razor:61: trailing whitespace.
+[32m+[m[41m    [m
+Components/Pages/StudentForm.razor:64: new blank line at EOF.
+Components/Pages/Students/Enrollment.razor:160: trailing whitespace.
+[32m+[m[41m                            [m
+Components/Pages/Teachers/Create.razor:185: trailing whitespace.
+[32m+[m[41m [m
+Components/Pages/Users.razor:37: trailing whitespace.
+[32m+[m[32m    }[m[41m   [m
+Components/Pages/Weather.razor:65: new blank line at EOF.
+Components/Routes.razor:29: trailing whitespace.
+[32m+[m[32m        @*<RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />[m[41m [m
+Components/Routes.razor:36: new blank line at EOF.
+Components/Shared/Authorization/RedirectToLogin.razor:63: new blank line at EOF.
+Components/Shared/Feedback/NotificationContainer.razor:20: trailing whitespace.
+[32m+[m[41m           [m
+Components/Shared/Layout/PageHeader.razor:20: trailing whitespace.
+[32m+[m[32m    </div>[m[41m [m
+Components/Shared/Lists/EmptyState.razor:19: new blank line at EOF.
+Components/Shared/Lists/SearchBox.razor:29: new blank line at EOF.
+Components/Shared/Lists/SortableHeader.razor:22: trailing whitespace.
+[32m+[m[32m    [Parameter][m[41m [m
+Components/Shared/Lists/SortableHeader.razor:25: trailing whitespace.
+[32m+[m[32m    [Parameter][m[41m [m
+Components/Shared/Lists/SortableHeader.razor:28: trailing whitespace.
+[32m+[m[32m    [Parameter][m[41m [m
+Components/Shared/Lists/SortableHeader.razor:31: trailing whitespace.
+[32m+[m[32m    [Parameter][m[41m [m
+Components/Shared/Lists/SortableHeader.razor:34: trailing whitespace.
+[32m+[m[32m    [Parameter][m[41m [m
+Components/Shared/Modal.razor:53: trailing whitespace.
+[32m+[m[32m    private string SizeClass =>[m[41m [m
+Components/Shared/StudentCard.razor:14: trailing whitespace.
+[32m+[m[41m    [m
+Components/Shared/StudentCard.razor:17: trailing whitespace.
+[32m+[m[41m    [m
+Components/Shared/StudentCard.razor:40: trailing whitespace.
+[32m+[m[41m    [m
+Components/Shared/StudentCard.razor:43: trailing whitespace.
+[32m+[m[41m        [m
+Components/_Imports.razor:13: new blank line at EOF.
+DTOs/Courses/CourseEditDto.cs:17: trailing whitespace.
+[32m+[m[41m    [m
+DTOs/Courses/CourseEditValidator.cs:34: trailing whitespace.
+[32m+[m[41m    [m
+DTOs/Department/DepartmentLookUpDto.cs:8: new blank line at EOF.
+DTOs/OperationResult.cs:24: trailing whitespace.
+[32m+[m[41m    [m
+DTOs/Students/StudentDetailsDto.cs:11: trailing whitespace.
+[32m+[m[41m    [m
+Data/Configurations/CourseConfiguration.cs:17: trailing whitespace.
+[32m+[m[41m        [m
+Data/Configurations/EnrollmentConfiguration.cs:20: trailing whitespace.
+[32m+[m[41m        [m
+Data/Configurations/PersonConfiguration.cs:11: trailing whitespace.
+[32m+[m[41m        [m
+Data/Configurations/TeacherConfiguration.cs:20: trailing whitespace.
+[32m+[m[41m        [m
+Migrations/20260718111859_InitialCreate.Designer.cs:371: new blank line at EOF.
+Migrations/20260718111859_InitialCreate.cs:268: new blank line at EOF.
+Migrations/20260727115259_AddIdentity.Designer.cs:632: new blank line at EOF.
+Migrations/20260727115259_AddIdentity.cs:228: new blank line at EOF.
+Migrations/20260806141713_AddPermissions.Designer.cs:742: new blank line at EOF.
+Migrations/20260806141713_AddPermissions.cs:97: new blank line at EOF.
+Migrations/20260813201233_AddDepartmentAuditing.Designer.cs:769: new blank line at EOF.
+Migrations/20260813201233_AddDepartmentAuditing.cs:105: new blank line at EOF.
+Migrations/ApplicationDbContextModelSnapshot.cs:766: new blank line at EOF.
+ModelsOrDomain/Entities/Address.cs:7: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Entities/Address.cs:16: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Entities/Course.cs:15: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Entities/CourseEntity.cs:13: trailing whitespace.
+[32m+[m[41m   [m
+ModelsOrDomain/Entities/Enrollment.cs:9: trailing whitespace.
+[32m+[m[41m        [m
+ModelsOrDomain/Entities/Person.cs:23: trailing whitespace.
+[32m+[m[32m    public Guid ConcurrencyToken { get; set; } = Guid.NewGuid();[m[41m [m
+ModelsOrDomain/Entities/Person.cs:28: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Entities/Student.cs:5: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Entities/Student.cs:19: trailing whitespace.
+[32m+[m[41m   [m
+ModelsOrDomain/Entities/Student.cs:25: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Entities/Teacher.cs:13: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Entities/Teacher.cs:14: trailing whitespace.
+[32m+[m[41m        [m
+ModelsOrDomain/Entities/Teacher.cs:15: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Entities/Teacher.cs:16: trailing whitespace.
+[32m+[m[41m        [m
+ModelsOrDomain/Entities/Teacher.cs:17: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Entities/Teacher.cs:18: trailing whitespace.
+[32m+[m[41m        [m
+ModelsOrDomain/Entities/Teacher.cs:19: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Entities/Teacher.cs:21: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/Enum/EnrollmentStatus.cs:12: new blank line at EOF.
+ModelsOrDomain/Enum/StudentStatus.cs:10: trailing whitespace.
+[32m+[m[32m    Expelled = 7,[m[41m [m
+ModelsOrDomain/Enum/StudentStatus.cs:13: trailing whitespace.
+[32m+[m[41m    [m
+ModelsOrDomain/User.cs:9: new blank line at EOF.
+Program.cs:98: trailing whitespace.
+[32m+[m[41m    [m
+Repositories/CourseRepository.cs:7: trailing whitespace.
+[32m+[m[41m   [m
+Repositories/CourseRepository.cs:10: trailing whitespace.
+[32m+[m[41m        [m
+Repositories/CourseRepository.cs:85: trailing whitespace.
+[32m+[m[32m        }).FirstOrDefaultAsync();[m[41m [m
+Repositories/CourseRepository.cs:109: trailing whitespace.
+[32m+[m[41m            [m
+Repositories/CourseRepository.cs:124: trailing whitespace.
+[32m+[m[41m                [m
+Repositories/CourseRepository.cs:136: trailing whitespace.
+[32m+[m[41m   [m
+Repositories/EnrollmentRepository.cs:48: trailing whitespace.
+[32m+[m[41m    [m
+Repositories/IEnrollmentRepository.cs:5: trailing whitespace.
+[32m+[m[41m    [m
+Repositories/IEnrollmentRepository.cs:12: trailing whitespace.
+[32m+[m[41m    [m
+Repositories/IStudentRepository.cs:37: trailing whitespace.
+[32m+[m[41m    [m
+Repositories/StudentRepository.cs:34: trailing whitespace.
+[32m+[m[41m        [m
+Repositories/StudentRepository.cs:61: trailing whitespace.
+[32m+[m[32m        if (existing == null)[m[41m   [m
+Repositories/StudentRepository.cs:116: trailing whitespace.
+[32m+[m[41m        [m
+Repositories/StudentRepository.cs:118: trailing whitespace.
+[32m+[m[32m        if (!string.IsNullOrWhiteSpace(criteria.Name))[m[41m  [m
+Repositories/StudentRepository.cs:120: trailing whitespace.
+[32m+[m[32m            query = query.Where(s =>[m[41m [m
+Repositories/StudentRepository.cs:125: trailing whitespace.
+[32m+[m[41m        [m
+Repositories/StudentRepository.cs:145: trailing whitespace.
+[32m+[m[32m        }[m[41m [m
+Repositories/StudentRepository.cs:158: trailing whitespace.
+[32m+[m[41m            [m
+Repositories/StudentRepository.cs:169: trailing whitespace.
+[32m+[m[41m        [m
+Repositories/StudentRepository.cs:188: trailing whitespace.
+[32m+[m[32m          PageSize = criteria.PageSize[m[41m  [m
+Repositories/StudentRepository.cs:190: trailing whitespace.
+[32m+[m[41m        [m
+Search/StudentSearchCriteria.cs:14: trailing whitespace.
+[32m+[m[32m    public bool Descending { get; set; }[m[41m [m
+Security/PermissionCatalog.cs:30: trailing whitespace.
+[32m+[m[41m        [m
+Security/PermissionCatalog.cs:57: trailing whitespace.
+[32m+[m[32m        new PermissionDefinition(Permissions.Teachers.Delete, "Delete teachers"),[m[41m        [m
+Security/RolePermissionCatalog.cs:47: trailing whitespace.
+[32m+[m[41m                [m
+Services/CourseService.cs:24: trailing whitespace.
+[32m+[m[41m        [m
+Services/DepartmentService.cs:145: trailing whitespace.
+[32m+[m[41m    [m
+Services/StudentServices.cs:237: trailing whitespace.
+[32m+[m[41m [m
+Services/TranscriptServices.cs:32: trailing whitespace.
+[32m+[m[41m        [m
+Services/TranscriptServices.cs:46: trailing whitespace.
+[32m+[m[41m        [m
+UnitOfWork/UnitOfWork.cs:10: trailing whitespace.
+[32m+[m[41m    [m
+UniversityAdministrationSystem.csproj:17: trailing whitespace.
+[32m+[m[41m    [m
+Validators/StudentCreateValidator.cs:29: trailing whitespace.
+[32m+[m[41m            [m
+Validators/StudentEditValidator.cs:18: trailing whitespace.
+[32m+[m[41m                [m
+Validators/StudentEditValidator.cs:19: trailing whitespace.
+[32m+[m[41m        [m
+appsettings.json:9: trailing whitespace.
+[32m+[m[41m  [m
+appsettings.json:13: trailing whitespace.
+[32m+[m[41m  [m
+appsettings.json:15: new blank line at EOF.
+tests/UniversityAdministrationSystem.IntegrationTests/Api/DashboardApiIntegrationTests.cs:146: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/DashboardApiIntegrationTests.cs:149: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/DashboardApiIntegrationTests.cs:172: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/ProblemDetailsDto.cs:10: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/ProblemDetailsDto.cs:13: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/ProblemDetailsDto.cs:16: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/ProblemDetailsDto.cs:19: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/ProblemDetailsDto.cs:22: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/ReportsApiIntegrationTests.cs:136: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/ReportsApiIntegrationTests.cs:232: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/ReportsApiIntegrationTests.cs:251: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/ReportsApiIntegrationTests.cs:357: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/ReportsApiIntegrationTests.cs:380: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:11: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:14: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:17: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:20: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:29: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:32: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:35: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:38: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:41: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:44: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:53: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:56: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:59: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:62: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:65: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:68: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:77: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:80: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:83: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:86: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:89: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:92: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:95: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:104: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:107: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:110: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentDtos.cs:113: trailing whitespace.
+[32m+[m[41m    [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentsApiIntegrationTests.cs:47: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentsApiIntegrationTests.cs:60: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentsApiIntegrationTests.cs:115: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Api/StudentsApiIntegrationTests.cs:146: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Database/DatabaseConstraintTests.cs:51: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Fixtures/DatabaseFixture.cs:33: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Workflows/EndToEndWorkflowTests.cs:72: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.IntegrationTests/Workflows/EndToEndWorkflowTests.cs:332: trailing whitespace.
+[32m+[m[32m        // Assert - Should be forbidden (403) or validation error (400)[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Domain/CourseDomainTests.cs:13: trailing whitespace.
+[32m+[m[32m    private Course CreateCourse(string courseCode = "CS101", string name = "Test Course", string description = "Description",[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Domain/CourseDomainTests.cs:277: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Domain/CourseDomainTests.cs:294: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:31: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:34: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:48: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:50: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:124: trailing whitespace.
+[32m+[m[32m        _unitOfWorkMock.Verify(x => x.Courses.AddAsync(It.Is<Course>(c =>[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:125: trailing whitespace.
+[32m+[m[32m            c.CourseCode == "CS101" &&[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:128: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:158: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:215: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:278: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:309: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:366: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:369: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:387: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:390: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:393: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/CourseServiceTests.cs:409: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/DepartmentServiceTests.cs:71: trailing whitespace.
+[32m+[m[32m            .Returns<Department>(async d =>[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/DepartmentServiceTests.cs:82: trailing whitespace.
+[32m+[m[32m        _unitOfWorkMock.Verify(x => x.Departments.AddAsync(It.Is<Department>(d =>[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/DepartmentServiceTests.cs:83: trailing whitespace.
+[32m+[m[32m            d.Code == "CS" &&[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/DepartmentServiceTests.cs:104: trailing whitespace.
+[32m+[m[32m            .Returns<Department>(async d =>[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/DepartmentServiceTests.cs:115: trailing whitespace.
+[32m+[m[32m        _unitOfWorkMock.Verify(x => x.Departments.AddAsync(It.Is<Department>(d =>[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/DepartmentServiceTests.cs:116: trailing whitespace.
+[32m+[m[32m            d.Code == "CS" &&[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/DepartmentServiceTests.cs:147: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/DepartmentServiceTests.cs:173: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/DepartmentServiceTests.cs:210: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/EnrollmentServiceTests.cs:242: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/EnrollmentServiceTests.cs:290: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/EnrollmentServiceTests.cs:342: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/EnrollmentServiceTests.cs:394: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/StudentServiceTests.cs:158: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/StudentServiceTests.cs:187: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/StudentServiceTests.cs:195: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/StudentServiceTests.cs:249: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/StudentServiceTests.cs:264: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/TeacherServiceTests.cs:50: trailing whitespace.
+[32m+[m[32m            .Returns<Teacher>(async t =>[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/TeacherServiceTests.cs:61: trailing whitespace.
+[32m+[m[32m        _unitOfWorkMock.Verify(x => x.Teachers.AddAsync(It.Is<Teacher>(t =>[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/TeacherServiceTests.cs:62: trailing whitespace.
+[32m+[m[32m            t.FirstName == "John" &&[m[41m [m
+tests/UniversityAdministrationSystem.UnitTests/Services/TeacherServiceTests.cs:66: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/TeacherServiceTests.cs:96: trailing whitespace.
+[32m+[m[41m        [m
+tests/UniversityAdministrationSystem.UnitTests/Services/TeacherServiceTests.cs:132: trailing whitespace.
+[32m+[m[41m        [m
+wwwroot/app.css:13: trailing whitespace.
+[32m+[m[41m    [m
+wwwroot/sidebar.css:230: new blank line at EOF.

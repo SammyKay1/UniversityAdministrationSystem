@@ -1,0 +1,37 @@
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h3>@Title</h3>
+
+        @if (!string.IsNullOrWhiteSpace(SubTitle))
+        {
+            <p class="text-muted">
+                @SubTitle
+            </p>
+        }
+    </div>
+
+    <div class="d-flex gap-2">
+        @if (ChildContent != null)
+        {
+            <div>
+                @ChildContent
+            </div>
+        }
+    </div> 
+
+</div>
+
+
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public string? SubTitle { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+}

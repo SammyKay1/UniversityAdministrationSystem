@@ -1,0 +1,594 @@
+@page "/students/edit/{id:int}"
+
+@using UniversityAdministrationSystem.Components.Shared
+@using UniversityAdministrationSystem.Components.Shared.Feedback
+@using Microsoft.AspNetCore.Authorization
+
+@inject StudentService StudentService
+@inject NavigationManager Navigation
+@inject NotificationService Notification
+
+@attribute [Authorize(Policy = Permissions.Students.Edit)]
+
+
+<PageTitle>Edit Student</PageTitle>
+
+<NotificationContainer />
+
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-start mb-4">
+
+        <div>
+
+            <div class="text-muted small mb-1">
+
+                <button type="button"
+                        class="btn btn-link p-0 text-decoration-none"
+                        @onclick="GoBack">
+
+                    Students
+
+                </button>
+
+                <span class="mx-2">
+                    /
+                </span>
+
+                Edit Student
+
+            </div>
+
+
+            <h1 class="mb-1">
+                Edit Student
+            </h1>
+
+            <p class="text-muted mb-0">
+                Update student information, academic assignment and address.
+            </p>
+
+        </div>
+
+
+        <button type="button"
+                class="btn btn-outline-secondary"
+                @onclick="GoBack">
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            Back
+
+        </button>
+
+    </div>
+
+
+    @if (student is null)
+    {
+        <!-- Loading -->
+
+        <div class="card">
+
+            <div class="card-body text-center py-5">
+
+                <div class="spinner-border"
+                     role="status">
+
+                    <span class="visually-hidden">
+                        Loading...
+                    </span>
+
+                </div>
+
+                <p class="text-muted mt-3 mb-0">
+                    Loading student information...
+                </p>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <EditForm Model="student"
+                  FormName="StudentEditForm"
+                  OnValidSubmit="UpdateStudent">
+
+            <DataAnnotationsValidator />
+
+
+            <!-- Validation -->
+
+            <ValidationSummary class="alert alert-warning" />
+
+
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="alert alert-danger d-flex align-items-start"
+                     role="alert">
+
+                    <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+
+                    <div>
+                        @errorMessage
+                    </div>
+
+                </div>
+            }
+
+
+            <div class="row g-4">
+
+                <!-- Personal Information -->
+
+                <div class="col-12">
+
+                    <div class="card">
+
+                        <div class="card-header bg-white">
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="student-edit-section-icon">
+
+                                    <i class="bi bi-person-vcard"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h5 class="mb-1">
+                                        Personal Information
+                                    </h5>
+
+                                    <p class="text-muted small mb-0">
+                                        Update the student's basic information.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div class="row g-4">
+
+                                <!-- First Name -->
+
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        First Name
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <InputText class="form-control"
+                                               @bind-Value="student.FirstName" />
+
+                                    <ValidationMessage
+                                        For="@(() => student.FirstName)" />
+
+                                </div>
+
+
+                                <!-- Last Name -->
+
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Last Name
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <InputText class="form-control"
+                                               @bind-Value="student.LastName" />
+
+                                    <ValidationMessage
+                                        For="@(() => student.LastName)" />
+
+                                </div>
+
+
+                                <!-- Email -->
+
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Email
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <InputText type="email"
+                                               class="form-control"
+                                               @bind-Value="student.Email" />
+
+                                    <ValidationMessage
+                                        For="@(() => student.Email)" />
+
+                                </div>
+
+
+                                <!-- Date of Birth -->
+
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Date of Birth
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+                                    <InputDate class="form-control"
+                                               @bind-Value="student.DateOfBirth" />
+
+                                    <ValidationMessage
+                                        For="@(() => student.DateOfBirth)" />
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Academic Information -->
+
+                <div class="col-12">
+
+                    <div class="card">
+
+                        <div class="card-header bg-white">
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="student-edit-section-icon">
+
+                                    <i class="bi bi-mortarboard"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h5 class="mb-1">
+                                        Academic Information
+                                    </h5>
+
+                                    <p class="text-muted small mb-0">
+                                        Manage the student's department assignment.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+
+                                    <label class="form-label">
+                                        Department
+                                        <span class="text-danger">*</span>
+                                    </label>
+
+
+                                    <InputSelect class="form-select"
+                                                 @bind-Value="student.DepartmentId">
+
+                                        <option value="0">
+                                            Select department
+                                        </option>
+
+
+                                        @foreach (var department in departments)
+                                        {
+                                            <option value="@department.Id">
+                                                @department.Name
+                                            </option>
+                                        }
+
+                                    </InputSelect>
+
+
+                                    <ValidationMessage
+                                        For="@(() => student.DepartmentId)" />
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Address -->
+
+                <div class="col-12">
+
+                    <div class="card">
+
+                        <div class="card-header bg-white">
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="student-edit-section-icon">
+
+                                    <i class="bi bi-geo-alt"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h5 class="mb-1">
+                                        Address
+                                    </h5>
+
+                                    <p class="text-muted small mb-0">
+                                        Update the student's contact address.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div class="row g-4">
+
+                                <!-- Address Line 1 -->
+
+                                <div class="col-12">
+
+                                    <label class="form-label">
+                                        Address Line 1
+                                    </label>
+
+                                    <InputText class="form-control"
+                                               placeholder="Enter address line 1"
+                                               @bind-Value="student.Address.AddressLine1" />
+
+                                </div>
+
+
+                                <!-- Address Line 2 -->
+
+                                <div class="col-12">
+
+                                    <label class="form-label">
+                                        Address Line 2
+                                    </label>
+
+                                    <InputText class="form-control"
+                                               placeholder="Enter address line 2"
+                                               @bind-Value="student.Address.AddressLine2" />
+
+                                </div>
+
+
+                                <!-- City -->
+
+                                <div class="col-md-4">
+
+                                    <label class="form-label">
+                                        City
+                                    </label>
+
+                                    <InputText class="form-control"
+                                               @bind-Value="student.Address.City" />
+
+                                </div>
+
+
+                                <!-- State -->
+
+                                <div class="col-md-4">
+
+                                    <label class="form-label">
+                                        State / Region
+                                    </label>
+
+                                    <InputText class="form-control"
+                                               @bind-Value="student.Address.State" />
+
+                                </div>
+
+
+                                <!-- Country -->
+
+                                <div class="col-md-4">
+
+                                    <label class="form-label">
+                                        Country
+                                    </label>
+
+                                    <InputText class="form-control"
+                                               @bind-Value="student.Address.Country" />
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Actions -->
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+
+                <div class="text-muted small">
+
+                    <i class="bi bi-info-circle me-1"></i>
+
+                    Fields marked with
+                    <span class="text-danger">*</span>
+                    are required.
+
+                </div>
+
+
+                <div class="d-flex gap-2">
+
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            @onclick="GoBack">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button type="submit"
+                            class="btn btn-primary"
+                            disabled="@isSaving">
+
+                        @if (isSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2"
+                                  role="status">
+                            </span>
+
+                            <span>
+                                Saving...
+                            </span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-check-lg me-1"></i>
+
+                            <span>
+                                Save Changes
+                            </span>
+                        }
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </EditForm>
+    }
+
+</div>
+
+
+@code {
+
+    private string? errorMessage;
+
+    private StudentEditDto? currentVersion;
+
+
+    [Parameter]
+    public int Id { get; set; }
+
+
+    private StudentEditDto? student;
+
+
+    private IEnumerable<DepartmentLookUpDto> departments = [];
+
+
+    private bool isSaving;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        student =
+            await StudentService
+                .GetStudentForEditAsync(Id);
+
+
+        departments =
+            await StudentService
+                .GetDepartmentsAsync();
+
+
+        if (student == null)
+        {
+            Navigation.NavigateTo("/not-found");
+        }
+    }
+
+
+    private async Task UpdateStudent()
+    {
+        if (student is null)
+            return;
+
+
+        errorMessage = null;
+
+        isSaving = true;
+
+
+        try
+        {
+            var result =
+                await StudentService
+                    .UpdateStudentAsync(student);
+
+
+            if (result.Success)
+            {
+                Notification.Success(
+                    "Student updated successfully.");
+
+                Navigation.NavigateTo("/students");
+            }
+            else if (result.HasConcurrencyConflict)
+            {
+                Notification.Error(result.Message);
+
+                currentVersion =
+                    result.CurrentStudent;
+            }
+            else
+            {
+                errorMessage = result.Message;
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage =
+                "Unable to update the student.";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/students");
+    }
+
+}

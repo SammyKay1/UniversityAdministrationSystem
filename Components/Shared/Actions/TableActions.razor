@@ -1,0 +1,81 @@
+@implements IDisposable
+
+@inject TableActionsService ActionsService
+
+
+<div class="table-actions">
+
+    <button type="button"
+            class="btn btn-sm btn-light border table-actions-trigger"
+            aria-label="Actions"
+            aria-expanded="@isOpen"
+            @onclick="Toggle">
+
+        <i class="bi bi-three-dots-vertical"></i>
+
+    </button>
+
+
+    @if (isOpen)
+    {
+        <div class="table-actions-menu">
+
+            <CascadingValue Value="Close">
+
+                @ChildContent
+
+            </CascadingValue>
+
+        </div>
+    }
+
+</div>
+
+
+@code {
+
+    private bool isOpen;
+
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        ActionsService.CloseRequested += Close;
+    }
+
+
+    private void Toggle()
+    {
+        if (!isOpen)
+        {
+            ActionsService.CloseAll();
+
+            isOpen = true;
+        }
+        else
+        {
+            isOpen = false;
+        }
+    }
+
+
+    public void Close()
+    {
+        if (!isOpen)
+            return;
+
+        isOpen = false;
+
+        InvokeAsync(StateHasChanged);
+    }
+
+
+    public void Dispose()
+    {
+        ActionsService.CloseRequested -= Close;
+    }
+
+}

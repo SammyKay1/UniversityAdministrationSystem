@@ -1,0 +1,88 @@
+
+.login-panel {
+    width: 100%;
+    min-width: 0;
+    padding: 2rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 12px 35px rgb(15 23 42 / 7%);
+}
+
+.login-heading {
+    text-align: center;
+    margin-bottom: 1.75rem;
+}
+
+.login-heading__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 68px;
+    height: 68px;
+    margin-bottom: 1.25rem;
+    border-radius: 18px;
+    color: #4f46e5;
+    background: #eef2ff;
+}
+
+.login-heading__title {
+    margin: 0 0 0.65rem;
+    font-size: clamp(1.4rem, 4vw, 1.8rem);
+    font-weight: 700;
+    line-height: 1.25;
+    color: #1f2937;
+}
+
+.login-heading__description {
+    max-width: 360px;
+    margin: 0 auto;
+    color: #6b7280;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.login-form-container {
+    width: 100%;
+    min-width: 0;
+}
+
+/* The outer login panel now supplies the border. */
+.login-form-container .card {
+    border: none;
+    border-radius: 0;
+    box-shadow: none !important;
+}
+
+.login-form-container .card-body {
+    padding: 0;
+}
+
+@media (max-width: 480px) {
+    .login-panel {
+        padding: 1.25rem;
+        border-radius: 14px;
+    }
+
+    .login-heading {
+        margin-bottom: 1.25rem;
+    }
+
+    .login-heading__icon {
+        width: 58px;
+        height: 58px;
+        margin-bottom: 1rem;
+    }
+}
+
+
+.login-error {
+    margin-bottom: 1.25rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+.login-error strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}

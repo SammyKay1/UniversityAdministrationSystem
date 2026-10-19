@@ -1,0 +1,79 @@
+@using UniversityAdministrationSystem.Components.Shared.Feedback
+@using Microsoft.JSInterop
+@inherits LayoutComponentBase
+@inject AdminLayoutState LayoutState
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+
+<div class="admin-layout @(LayoutState.IsSidebarCollapsed ? "sidebar-collapsed" : "") @(LayoutState.IsMobileDrawerOpen ? "drawer-open" : "")">
+
+    <Sidebar />
+
+    <div class="sidebar-backdrop @(LayoutState.IsMobileDrawerOpen ? "visible" : "")" @onclick="CloseMobileDrawer"></div>
+
+    <div class="admin-main">
+
+        <Topbar />
+
+        <main class="admin-content">
+
+            @Body
+
+        </main>
+
+    </div>
+
+</div>
+
+<DialogHost />
+
+
+@code {
+
+    private IJSObjectReference? jsModule;
+
+
+    protected override void OnInitialized()
+    {
+        LayoutState.OnChange += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Layout/MainLayout.razor.js");
+            await jsModule.InvokeVoidAsync("initializeDrawerEscapeHandler", DotNetObjectReference.Create(this));
+        }
+    }
+
+    public void Dispose()
+    {
+        LayoutState.OnChange -= StateHasChanged;
+    }
+
+    private void CloseMobileDrawer()
+    {
+        LayoutState.CloseMobileDrawer();
+    }
+
+    [JSInvokable]
+    public void OnDrawerEscape()
+    {
+        if (LayoutState.IsMobileDrawerOpen)
+        {
+            LayoutState.CloseMobileDrawer();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (jsModule is not null)
+        {
+            await jsModule.InvokeVoidAsync("disposeDrawerEscapeHandler");
+            await jsModule.DisposeAsync();
+        }
+    }
+
+}

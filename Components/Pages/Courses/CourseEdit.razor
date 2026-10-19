@@ -1,0 +1,508 @@
+@page "/courses/edit/{Id:int}"
+
+@using UniversityAdministrationSystem.Components.Shared
+@using UniversityAdministrationSystem.Components.Shared.Forms
+@using UniversityAdministrationSystem.Components.Shared.Feedback
+@using UniversityAdministrationSystem.Components.Shared.Layout
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Policy = Permissions.Courses.Edit)]
+
+@inject CourseService CourseService
+@inject DepartmentService DepartmentService
+@inject TeacherService TeacherService
+@inject NotificationService Notification
+@inject NavigationManager Navigation
+
+
+<NotificationContainer />
+
+<PageTitle>Edit Course</PageTitle>
+
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1>Edit Course</h1>
+
+            <p class="text-muted mb-0">
+                Update course information, department and teacher assignment.
+            </p>
+
+        </div>
+
+
+        <button class="btn btn-secondary" @onclick="GoBack">
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            Back
+
+        </button>
+
+    </div>
+
+
+    <!-- Error -->
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+
+            @errorMessage
+
+        </div>
+    }
+
+
+    <!-- Loading -->
+
+    @if (isLoading)
+    {
+        <div class="card">
+
+            <div class="card-body text-center py-5">
+
+                <div class="spinner-border" role="status">
+                </div>
+
+                <p class="text-muted mt-3 mb-0">
+                    Loading course...
+                </p>
+
+            </div>
+
+        </div>
+    }
+    else if (course is null)
+    {
+        <div class="alert alert-warning">
+
+            <h5 class="alert-heading">
+                Course Not Found
+            </h5>
+
+            <p class="mb-3">
+                The requested course could not be found.
+            </p>
+
+            <button class="btn btn-secondary" @onclick="GoBack">
+
+                <i class="bi bi-arrow-left me-1"></i>
+
+                Back to Courses
+
+            </button>
+
+        </div>
+    }
+    else
+    {
+        <div class="card">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+                    Course Information
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <EditForm Model="course" FormName="EditCourseForm" OnValidSubmit="Save">
+
+                    <DataAnnotationsValidator />
+
+                    <ValidationSummary />
+
+
+                    <div class="row g-4">
+
+                        <!-- Course Code -->
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Course Code
+                            </label>
+
+                            <InputText class="form-control" @bind-Value="course.CourseCode" />
+
+                            <ValidationMessage For="@(() => course.CourseCode)" />
+
+                            <div class="form-text">
+                                Example: CS101
+                            </div>
+
+                        </div>
+
+
+                        <!-- Course Name -->
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Course Name
+                            </label>
+
+                            <InputText class="form-control" @bind-Value="course.Name" />
+
+                            <ValidationMessage For="@(() => course.Name)" />
+
+                        </div>
+
+
+                        <!-- Description -->
+
+                        <div class="col-12">
+
+                            <label class="form-label">
+                                Description
+                            </label>
+
+                            <InputTextArea class="form-control" rows="4" @bind-Value="course.Description" />
+
+                            <ValidationMessage For="@(() => course.Description)" />
+
+                        </div>
+
+
+                        <!-- Credit Hours -->
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Credit Hours
+                            </label>
+
+                            <InputNumber class="form-control" @bind-Value="course.CreditHours" />
+
+                            <ValidationMessage For="@(() => course.CreditHours)" />
+
+                        </div>
+
+
+                        <!-- Capacity -->
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Capacity
+                            </label>
+
+                            <InputNumber class="form-control" @bind-Value="course.Capacity" />
+
+                            <ValidationMessage For="@(() => course.Capacity)" />
+
+                            <div class="form-text">
+                                Maximum number of students who can enroll.
+                            </div>
+
+                        </div>
+
+
+                        <!-- Department -->
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Department
+                            </label>
+
+                            <DepartmentSelect Departments="departments" @bind-Value="course.DepartmentId"
+                                              OnChanged="DepartmentChanged" />
+
+                            <ValidationMessage For="@(() => course.DepartmentId)" />
+
+                        </div>
+
+
+                        <!-- Teacher -->
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Teacher
+                            </label>
+
+                            <InputSelect class="form-select" @bind-Value="course.TeacherId">
+
+                                <option value="">
+                                    No teacher assigned
+                                </option>
+
+                                @foreach (var teacher in teachers)
+                                {
+                                    <option value="@teacher.Id">
+                                        @teacher.FullName
+                                    </option>
+                                }
+
+                            </InputSelect>
+
+                            <ValidationMessage For="@(() => course.TeacherId)" />
+
+                            @if (course.DepartmentId <= 0)
+                            {
+                                <div class="form-text text-muted">
+
+                                    Select a department first.
+
+                                </div>
+                            }
+                            else if (!teachers.Any())
+                            {
+                                <div class="form-text text-warning">
+
+                                    No teachers are currently assigned
+                                    to this department.
+
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-text">
+
+                                    Only teachers belonging to the selected
+                                    department are shown.
+
+                                </div>
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Actions -->
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+
+                        <button type="button" class="btn btn-secondary" @onclick="GoBack" disabled="@isSaving">
+
+                            Cancel
+
+                        </button>
+
+
+                        <button type="submit" class="btn btn-primary" disabled="@isSaving">
+
+                            @if (isSaving)
+                            {
+                                <span class="spinner-border
+                                    spinner-border-sm me-1" role="status">
+                                </span>
+
+                                <span>
+                                    Saving...
+                                </span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-check-lg me-1"></i>
+
+                                <span>
+                                    Save Changes
+                                </span>
+                            }
+
+                        </button>
+
+                    </div>
+
+                </EditForm>
+
+            </div>
+
+        </div>
+    }
+
+</div>
+
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+
+    private CourseEditDto? course;
+
+
+    private IEnumerable<DepartmentLookUpDto> departments =
+        Enumerable.Empty<DepartmentLookUpDto>();
+
+
+    private IEnumerable<TeacherLookupDto> teachers =
+        Enumerable.Empty<TeacherLookupDto>();
+
+
+    private bool isLoading = true;
+
+    private bool isSaving;
+
+    private string? errorMessage;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadCourseAsync();
+    }
+
+
+    private async Task LoadCourseAsync()
+    {
+        try
+        {
+            isLoading = true;
+
+            errorMessage = null;
+
+            teachers = Enumerable.Empty<TeacherLookupDto>();
+
+
+            departments =
+                await DepartmentService
+                    .GetDepartmentsAsync();
+
+
+            course =
+                await CourseService
+                    .GetForEditAsync(Id);
+
+
+            if (course is null)
+                return;
+
+
+            if (course.DepartmentId > 0)
+            {
+                teachers =
+                    await TeacherService
+                        .GetLookupAsync(course.DepartmentId);
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage =
+                "Unable to load the course.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private async Task DepartmentChanged(int departmentId)
+    {
+        if (course is null)
+            return;
+
+
+        /*
+         * A teacher belongs to a department.
+         * Therefore, changing the department invalidates
+         * the current teacher assignment.
+         */
+
+        course.TeacherId = null;
+
+
+        if (departmentId <= 0)
+        {
+            teachers =
+                Enumerable.Empty<TeacherLookupDto>();
+
+            return;
+        }
+
+
+        try
+        {
+            teachers =
+                await TeacherService
+                    .GetLookupAsync(departmentId);
+        }
+        catch (Exception)
+        {
+            teachers =
+                Enumerable.Empty<TeacherLookupDto>();
+
+            errorMessage =
+                "Unable to load teachers for the selected department.";
+        }
+    }
+
+
+    private async Task Save()
+    {
+        if (course is null || isSaving)
+            return;
+
+
+        isSaving = true;
+
+        errorMessage = null;
+
+
+        try
+        {
+            course.CourseCode =
+                course.CourseCode.Trim()
+                    .ToUpperInvariant();
+
+            course.Name =
+                course.Name.Trim();
+
+            course.Description =
+                course.Description.Trim();
+
+
+            var result =
+                await CourseService
+                    .UpdateAsync(course);
+
+
+            if (result.Success)
+            {
+                Notification.Success(
+                    "Course updated successfully.");
+
+                Navigation.NavigateTo("/courses");
+            }
+            else
+            {
+                Notification.Error(
+                    result.Message);
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            Notification.Error(ex.Message);
+        }
+        catch (Exception)
+        {
+            Notification.Error(
+                "Unable to update the course. Please try again.");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/courses");
+    }
+
+}

@@ -1,0 +1,304 @@
+@page "/administration/departments/create"
+
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Policy = Permissions.Departments.Create)]
+
+@inject DepartmentService DepartmentService
+@inject NavigationManager Navigation
+
+<PageTitle>Create Department</PageTitle>
+
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1 class="mb-1">
+                Create Department
+            </h1>
+
+            <p class="text-muted mb-0">
+                Add a new academic department to the university.
+            </p>
+
+        </div>
+
+
+        <button type="button"
+                class="btn btn-outline-secondary"
+                @onclick="Cancel">
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            Back
+
+        </button>
+
+    </div>
+
+
+    <!-- Error -->
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+
+            <i class="bi bi-exclamation-triangle me-2"></i>
+
+            @errorMessage
+
+        </div>
+    }
+
+
+    <!-- Form -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Department Information
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <EditForm Model="department"
+                      FormName="CreateDepartmentForm"
+                      OnValidSubmit="CreateDepartmentAsync">
+
+                <DataAnnotationsValidator />
+
+
+                <ValidationSummary />
+
+
+                <div class="row g-4">
+
+                    <!-- Department Name -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+
+                            Department Name
+
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <InputText class="form-control"
+                                   placeholder="e.g. Computer Science"
+                                   @bind-Value="department.Name" />
+
+                        <ValidationMessage
+                            For="@(() => department.Name)" />
+
+                    </div>
+
+
+                    <!-- Department Code -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+
+                            Department Code
+
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+                        <InputText class="form-control"
+                                   placeholder="e.g. CS"
+                                   @bind-Value="department.Code" />
+
+                        <ValidationMessage
+                            For="@(() => department.Code)" />
+
+                        <div class="form-text">
+
+                            Use a short unique code such as
+                            <strong>CS</strong>,
+                            <strong>MATH</strong>, or
+                            <strong>BUS</strong>.
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Email -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Department Email
+                        </label>
+
+                        <InputText type="email"
+                                   class="form-control"
+                                   placeholder="department@university.edu"
+                                   @bind-Value="department.Email" />
+
+                        <ValidationMessage
+                            For="@(() => department.Email)" />
+
+                        <div class="form-text">
+                            Optional contact email for the department.
+                        </div>
+
+                    </div>
+
+
+                    <!-- Description -->
+
+                    <div class="col-12">
+
+                        <label class="form-label">
+                            Description
+                        </label>
+
+                        <InputTextArea class="form-control"
+                                       rows="4"
+                                       placeholder="Enter a brief description of the department..."
+                                       @bind-Value="department.Description" />
+
+                        <ValidationMessage
+                            For="@(() => department.Description)" />
+
+                    </div>
+
+                </div>
+
+
+                <!-- Form Actions -->
+
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            disabled="@isSaving"
+                            @onclick="Cancel">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button type="submit"
+                            class="btn btn-primary"
+                            disabled="@isSaving">
+
+                        @if (isSaving)
+                        {
+                            <span class="spinner-border
+                                         spinner-border-sm me-1"
+                                  role="status">
+                            </span>
+
+                            <span>
+                                Saving...
+                            </span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-check-lg me-1"></i>
+
+                            <span>
+                                Save Department
+                            </span>
+                        }
+
+                    </button>
+
+                </div>
+
+            </EditForm>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    private DepartmentDto department = new();
+
+    private bool isSaving;
+
+    private string? errorMessage;
+
+
+    private async Task CreateDepartmentAsync()
+    {
+        if (isSaving)
+            return;
+
+
+        isSaving = true;
+
+        errorMessage = null;
+
+
+        try
+        {
+            NormalizeDepartment();
+
+
+            await DepartmentService
+                .CreateAsync(department);
+
+
+            Navigation.NavigateTo(
+                "/administration/departments");
+        }
+        catch (InvalidOperationException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (Exception)
+        {
+            errorMessage =
+                "Unable to create the department. Please try again.";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+
+    private void NormalizeDepartment()
+    {
+        department.Code =
+            department.Code?.Trim().ToUpperInvariant();
+
+        department.Name =
+            department.Name?.Trim();
+
+        department.Email =
+            department.Email?.Trim();
+
+        department.Description =
+            department.Description?.Trim();
+    }
+
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo(
+            "/administration/departments");
+    }
+
+}

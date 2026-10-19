@@ -1,0 +1,134 @@
+
+
+@if (TotalPages > 1)
+{
+    <nav aria-label="Pagination">
+
+        <ul class="pagination justify-content-center">
+
+            <!-- Previous -->
+
+            <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+
+                <button class="page-link"  @onclick="Previous">
+
+                    <span>&laquo;</span>
+
+                </button>
+
+            </li>
+
+            @if (StartPage > 1)
+            {
+                <li class="page-item">
+
+                    <button class="page-link"  @onclick="() => Select(1)">
+                        1
+                    </button>
+
+                </li>
+
+                @if (StartPage > 2)
+                {
+                    <li class="page-item disabled">
+
+                        <span class="page-link">...</span>
+
+                    </li>
+                }
+            }
+
+            @for (int i = StartPage; i <= EndPage; i++)
+            {
+                var pageNumber = i;
+
+                <li class="page-item @(pageNumber == CurrentPage ? "active" : "")">
+
+                    <button class="page-link"
+                            @onclick="() => Select(pageNumber)">
+                        @pageNumber
+                    </button>
+
+                </li>
+            }
+
+            @if (EndPage < TotalPages)
+            {
+                @if (EndPage < TotalPages - 1)
+                {
+                    <li class="page-item disabled">
+
+                        <span class="page-link">...</span>
+
+                    </li>
+                }
+
+                <li class="page-item">
+
+                    <button class="page-link"
+                            @onclick="() => Select(TotalPages)">
+                        @TotalPages
+                    </button>
+
+                </li>
+            }
+
+            <!-- Next -->
+
+            <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+
+                <button class="page-link"  @onclick="Next">
+
+                    <span>&raquo;</span>
+
+                </button>
+
+            </li>
+
+        </ul>
+
+    </nav>
+}
+
+
+
+
+  @code{
+
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public int TotalPages { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
+    private const int WindowSize = 2;
+
+    private int StartPage =>
+        Math.Max(1, CurrentPage - WindowSize);
+
+    private int EndPage =>
+        Math.Min(TotalPages, CurrentPage + WindowSize);
+
+    private async Task Select(int page)
+    {
+        if (page == CurrentPage)
+            return;
+
+        await OnPageChanged.InvokeAsync(page);
+    }
+
+    private async Task Previous()
+    {
+        if (CurrentPage > 1)
+            await OnPageChanged.InvokeAsync(CurrentPage - 1);
+    }
+
+    private async Task Next()
+    {
+        if (CurrentPage < TotalPages)
+            await OnPageChanged.InvokeAsync(CurrentPage + 1);
+    }
+}

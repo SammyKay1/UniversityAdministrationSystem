@@ -1,0 +1,683 @@
+@page "/administration/teachers"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using UniversityAdministrationSystem.Components.Shared
+@using UniversityAdministrationSystem.Components.Shared.Actions
+@using UniversityAdministrationSystem.Components.Shared.Feedback
+@using UniversityAdministrationSystem.Components.Shared.Layout
+
+@attribute [Authorize(Policy = Permissions.Teachers.View)]
+
+@inject TeacherService TeacherService
+@inject DepartmentService DepartmentService
+@inject NavigationManager Navigation
+@inject DialogService DialogService
+@inject NotificationService Notification
+
+
+<PageTitle>Teachers</PageTitle>
+
+<NotificationContainer />
+
+
+<div class="container-fluid">
+
+    <!-- ===================================================== -->
+    <!-- PAGE HEADER -->
+    <!-- ===================================================== -->
+
+    <div class="d-flex justify-content-between
+                align-items-center mb-4">
+
+        <div>
+
+            <h1 class="mb-1">
+                Teachers
+            </h1>
+
+            <p class="text-muted mb-0">
+                Manage teachers and their department assignments.
+            </p>
+
+        </div>
+
+
+        <AuthorizeView Policy="@Permissions.Teachers.Create">
+
+            <Authorized>
+
+                <button class="btn btn-primary"
+                        @onclick="CreateTeacher">
+
+                    <i class="bi bi-plus-lg me-1"></i>
+
+                    New Teacher
+
+                </button>
+
+            </Authorized>
+
+        </AuthorizeView>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- FILTERS -->
+    <!-- ===================================================== -->
+
+    <div class="card mb-4">
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <!-- Search -->
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Search teachers
+                    </label>
+
+                    <input class="form-control"
+                           placeholder="Search by name or email..."
+                           @bind="searchTerm"
+                           @bind:event="oninput" />
+
+                </div>
+
+
+                <!-- Department -->
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Department
+                    </label>
+
+                    <select class="form-select"
+                            @bind="selectedDepartmentId">
+
+                        <option value="">
+                            All Departments
+                        </option>
+
+                        @foreach (var department in departments)
+                        {
+                            <option value="@department.Id">
+                                @department.Name
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- Search -->
+
+                <div class="col-md-2 d-flex align-items-end">
+
+                    <button class="btn btn-outline-primary w-100"
+                            @onclick="ApplyFilters">
+
+                        <i class="bi bi-search me-1"></i>
+
+                        Search
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- ERROR -->
+    <!-- ===================================================== -->
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger d-flex
+                    align-items-center">
+
+            <i class="bi bi-exclamation-triangle me-2"></i>
+
+            <span>
+                @errorMessage
+            </span>
+
+        </div>
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- LOADING -->
+    <!-- ===================================================== -->
+
+    @if (isLoading)
+    {
+        <div class="card">
+
+            <div class="card-body text-center py-5">
+
+                <div class="spinner-border text-primary"
+                     role="status">
+                </div>
+
+                <p class="text-muted mt-3 mb-0">
+                    Loading teachers...
+                </p>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <!-- ================================================= -->
+        <!-- TEACHER TABLE -->
+        <!-- ================================================= -->
+
+        <div class="card">
+
+            <div class="card-body p-0">
+
+                @if (result is null || !result.Items.Any())
+                {
+                    <!-- Empty State -->
+
+                    <div class="text-center py-5">
+
+                        <i class="bi bi-person-x fs-1 text-muted"></i>
+
+                        <h5 class="mt-3">
+                            No teachers found
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            No teacher records match your search criteria.
+                        </p>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-hover
+                                      align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+
+                                    <th>
+                                        Teacher
+                                    </th>
+
+                                    <th>
+                                        Email
+                                    </th>
+
+                                    <th>
+                                        Department
+                                    </th>
+
+                                    <th>
+                                        Courses
+                                    </th>
+
+                                    <th class="text-end">
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @foreach (var teacher in result.Items)
+                                {
+                                    <tr>
+
+                                        <!-- Teacher -->
+
+                                        <td>
+
+                                            <div class="fw-semibold">
+                                                @teacher.FullName
+                                            </div>
+
+                                        </td>
+
+
+                                        <!-- Email -->
+
+                                        <td>
+
+                                            <a href="mailto:@teacher.Email"
+                                               class="text-decoration-none">
+
+                                                @teacher.Email
+
+                                            </a>
+
+                                        </td>
+
+
+                                        <!-- Department -->
+
+                                        <td>
+
+                                            @if (!string.IsNullOrWhiteSpace(
+                                                teacher.DepartmentName))
+                                            {
+                                                <span class="badge
+                                                             bg-secondary-subtle
+                                                             text-secondary">
+
+                                                    @teacher.DepartmentName
+
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    Not assigned
+                                                </span>
+                                            }
+
+                                        </td>
+
+
+                                        <!-- Courses -->
+
+                                        <td>
+
+                                            <span class="badge
+                                                         bg-info-subtle
+                                                         text-info">
+
+                                                @teacher.CourseCount
+
+                                            </span>
+
+                                        </td>
+
+
+                                        <!-- Actions -->
+
+                                        <td class="text-end">
+
+                                            <TableActions>
+
+                                                <!-- View -->
+
+                                                <button type="button"
+                                                        @onclick="() =>
+                                                            ViewTeacher(teacher.Id)">
+
+                                                    <i class="bi bi-eye me-2"></i>
+
+                                                    View
+
+                                                </button>
+
+
+                                                <!-- Edit -->
+
+                                                <AuthorizeView
+                                                    Policy="@Permissions.Teachers.Edit">
+
+                                                    <Authorized>
+
+                                                        <button type="button"
+                                                                @onclick="() =>
+                                                                    EditTeacher(teacher.Id)">
+
+                                                            <i class="bi bi-pencil me-2"></i>
+
+                                                            Edit
+
+                                                        </button>
+
+                                                    </Authorized>
+
+                                                </AuthorizeView>
+
+
+                                                <!-- Archive -->
+
+                                                <AuthorizeView
+                                                    Policy="@Permissions.Teachers.Archive">
+
+                                                    <Authorized>
+
+                                                        <button type="button"
+                                                                class="text-danger"
+                                                                @onclick="() =>
+                                                                    ArchiveTeacher(teacher.Id)">
+
+                                                            <i class="bi bi-archive me-2"></i>
+
+                                                            Archive
+
+                                                        </button>
+
+                                                    </Authorized>
+
+                                                </AuthorizeView>
+
+                                            </TableActions>
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- PAGINATION -->
+            <!-- ================================================= -->
+
+            @if (result is not null && result.TotalCount > 0)
+            {
+                <div class="card-footer">
+
+                    <div class="d-flex justify-content-between
+                                align-items-center">
+
+                        <!-- Result count -->
+
+                        <div class="text-muted">
+
+                            Showing
+
+                            <strong>
+                                @StartItem
+                            </strong>
+
+                            -
+
+                            <strong>
+                                @EndItem
+                            </strong>
+
+                            of
+
+                            <strong>
+                                @result.TotalCount
+                            </strong>
+
+                            teachers
+
+                        </div>
+
+
+                        <!-- Pagination -->
+
+                        <div class="btn-group">
+
+                            <button class="btn btn-outline-secondary"
+                                    disabled="@(CurrentPage <= 1)"
+                                    @onclick="PreviousPage">
+
+                                <i class="bi bi-chevron-left"></i>
+
+                            </button>
+
+
+                            <span class="btn btn-outline-secondary disabled">
+
+                                Page @CurrentPage
+                                of @TotalPages
+
+                            </span>
+
+
+                            <button class="btn btn-outline-secondary"
+                                    disabled="@(CurrentPage >= TotalPages)"
+                                    @onclick="NextPage">
+
+                                <i class="bi bi-chevron-right"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>
+
+
+@code {
+
+    private PagedResult<TeacherListDto>? result;
+
+
+    private IEnumerable<DepartmentLookUpDto>
+        departments = Enumerable.Empty<DepartmentLookUpDto>();
+
+
+    private string? searchTerm;
+
+    private int? selectedDepartmentId;
+
+
+    private int CurrentPage = 1;
+
+    private const int PageSize = 10;
+
+
+    private bool isLoading;
+
+    private string? errorMessage;
+
+
+    private int TotalPages =>
+        result is null || result.TotalCount == 0
+            ? 1
+            : (int)Math.Ceiling(
+                result.TotalCount /
+                (double)PageSize);
+
+
+    private int StartItem =>
+        result is null || result.TotalCount == 0
+            ? 0
+            : ((CurrentPage - 1) * PageSize) + 1;
+
+
+    private int EndItem =>
+        result is null
+            ? 0
+            : Math.Min(
+                CurrentPage * PageSize,
+                result.TotalCount);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDepartmentsAsync();
+
+        await LoadTeachersAsync();
+    }
+
+
+    private async Task LoadDepartmentsAsync()
+    {
+        departments =
+            await DepartmentService
+                .GetDepartmentsAsync();
+    }
+
+
+    private async Task LoadTeachersAsync()
+    {
+        try
+        {
+            isLoading = true;
+
+            errorMessage = null;
+
+
+            result =
+                await TeacherService.GetPagedAsync(
+                    CurrentPage,
+                    PageSize,
+                    searchTerm,
+                    selectedDepartmentId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            errorMessage =
+                "Unable to load teachers.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private async Task ApplyFilters()
+    {
+        CurrentPage = 1;
+
+        await LoadTeachersAsync();
+    }
+
+
+    private async Task PreviousPage()
+    {
+        if (CurrentPage <= 1)
+            return;
+
+        CurrentPage--;
+
+        await LoadTeachersAsync();
+    }
+
+
+    private async Task NextPage()
+    {
+        if (CurrentPage >= TotalPages)
+            return;
+
+        CurrentPage++;
+
+        await LoadTeachersAsync();
+    }
+
+
+    private void CreateTeacher()
+    {
+        Navigation.NavigateTo(
+            "/administration/teachers/create");
+    }
+
+
+    private void ViewTeacher(int id)
+    {
+        Navigation.NavigateTo(
+            $"/administration/teachers/{id}");
+    }
+
+
+    private void EditTeacher(int id)
+    {
+        Navigation.NavigateTo(
+            $"/administration/teachers/edit/{id}");
+    }
+
+
+    private async Task ArchiveTeacher(int id)
+    {
+        var teacher =
+            result?.Items
+                .FirstOrDefault(t => t.Id == id);
+
+
+        if (teacher is null)
+            return;
+
+
+        var confirmed =
+            await DialogService.ConfirmAsync(
+                "Archive Teacher",
+                $"Are you sure you want to archive " +
+                $"'{teacher.FullName}'?");
+
+
+        if (!confirmed)
+            return;
+
+
+        try
+        {
+            errorMessage = null;
+
+
+            await TeacherService
+                .ArchiveAsync(id);
+
+
+            Notification.Success(
+                "Teacher archived successfully.");
+
+
+            /*
+             * If the current page becomes empty after
+             * archiving the final teacher, move back
+             * one page.
+             */
+
+            if (result?.Items.Count() == 1 &&
+                CurrentPage > 1)
+            {
+                CurrentPage--;
+            }
+
+
+            await LoadTeachersAsync();
+        }
+        catch (InvalidOperationException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            Notification.Error(
+                "Unable to archive the teacher.");
+        }
+    }
+
+}

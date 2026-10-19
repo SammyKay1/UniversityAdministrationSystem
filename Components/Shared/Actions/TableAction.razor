@@ -1,0 +1,43 @@
+
+<button type="button"    class="@CssClass"     @onclick="HandleClick">
+
+    @if (!string.IsNullOrWhiteSpace(Icon))
+    {
+        <i class="@Icon me-2"></i>
+    }
+
+    @ChildContent
+
+</button>
+
+
+@code {
+
+    [CascadingParameter]
+    private Action? CloseMenu { get; set; }
+
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+
+    [Parameter]
+    public string CssClass { get; set; } = "";
+
+
+    private async Task HandleClick()
+    {
+        CloseMenu?.Invoke();
+
+        await OnClick.InvokeAsync();
+    }
+
+}

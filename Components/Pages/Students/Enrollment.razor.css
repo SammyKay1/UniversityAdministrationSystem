@@ -1,0 +1,79 @@
+
+.enrollment-student-avatar {
+    width: 64px;
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary);
+
+    font-size: 1.6rem;
+}
+
+
+.enrollment-section-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 0.75rem;
+
+    border-radius: 0.5rem;
+
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary);
+
+    font-size: 1.1rem;
+}
+
+
+.course-capacity-panel {
+    padding: 1rem;
+
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+
+    background-color: var(--bs-light);
+}
+
+
+.capacity-item {
+    padding: 0.75rem;
+
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.5rem;
+
+    background-color: var(--bs-white);
+}
+
+
+.enrollment-empty-icon {
+    width: 56px;
+    height: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto;
+
+    border-radius: 50%;
+
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+
+    font-size: 1.5rem;
+}
+
+
+.modal {
+    background: rgba(0, 0, 0, 0.15);
+}

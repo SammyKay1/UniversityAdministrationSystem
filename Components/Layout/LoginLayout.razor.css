@@ -1,0 +1,25 @@
+
+
+.login-layout {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background: #f5f7fb;
+}
+
+.login-layout__content {
+    width: 100%;
+    max-width: 440px;
+    min-width: 0;
+    margin-inline: auto;
+}
+
+@media (max-width: 480px) {
+    .login-layout {
+        padding: 1.25rem 1rem;
+        align-items: flex-start;
+    }
+}

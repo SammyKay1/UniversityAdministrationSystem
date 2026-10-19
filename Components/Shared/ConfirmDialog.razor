@@ -1,0 +1,100 @@
+
+@if(IsVisible)
+{
+    <div class="modal-backdrop fade show"></div>
+
+
+    <div class="modal d-block">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Confirmation
+                    </h5>
+
+                </div>
+
+
+
+                <div class="modal-body">
+
+                    @Message
+
+                </div>
+
+
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-secondary"
+                            @onclick="Cancel">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button class="btn btn-danger"
+                            @onclick="Confirm">
+
+                        Delete
+
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
+@code {
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public string Message { get; set; } = "";
+
+
+    [Parameter]
+    public EventCallback OnConfirmed { get; set; }
+
+
+    [Parameter]
+    public EventCallback OnCancelled { get; set; }
+
+    public Task ShowAsync()
+        {
+            IsVisible = true;
+
+            StateHasChanged();
+
+            return Task.CompletedTask;
+        }
+
+    private async Task Confirm()
+    {
+        await OnConfirmed.InvokeAsync();
+    }
+
+
+
+    private async Task Cancel()
+    {
+        await OnCancelled.InvokeAsync();
+    }
+
+}

@@ -1,0 +1,24 @@
+
+<div class="mt-4">
+
+    <button class="btn btn-primary" type="submit">
+        Save
+    </button>
+
+    <button type="button" class="btn btn-secondary ms-2"  @onclick="Cancel">
+        Cancel
+    </button>
+
+</div>
+
+@code{
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private async Task Cancel()
+    {
+        await OnCancel.InvokeAsync();
+    }
+
+}

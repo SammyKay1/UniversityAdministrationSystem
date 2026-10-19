@@ -1,0 +1,86 @@
+@page "/profile"
+@using UniversityAdministrationSystem.Components.Shared.Layout
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+
+
+@inject AccountService AccountService
+
+
+<PageHeader Title="My Profile" />
+
+
+<PageCard>
+
+
+    @if (profile == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+
+        <EditForm Model="profile" OnValidSubmit="Save" FormName="ProfileForm">
+
+            <DataAnnotationsValidator />
+
+            <ValidationSummary />
+
+            <div class="mb-3">
+
+                <label>Email</label>
+
+                <input class="form-control" value="@profile.Email" disabled />
+
+            </div>
+
+
+            <div class="mb-3">
+
+                <label>First Name</label>
+
+                <InputText class="form-control" @bind-Value="profile.FirstName" />
+
+            </div>
+
+            <div class="mb-3">
+
+                <label>Last Name</label>
+
+                <InputText class="form-control" @bind-Value="profile.LastName" />
+
+            </div>
+
+
+            <button class="btn btn-primary">
+                Save
+            </button>
+
+        </EditForm>
+    }
+
+</PageCard>
+
+
+@code {
+
+    private ProfileDto? profile;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        profile =   await AccountService.GetProfileAsync();
+    }
+
+
+
+    private async Task Save()
+    {
+        if (profile != null)
+        {
+            await AccountService.UpdateProfileAsync(profile);
+        }
+    }
+
+}

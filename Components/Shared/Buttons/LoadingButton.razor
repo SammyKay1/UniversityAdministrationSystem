@@ -1,0 +1,45 @@
+
+
+<button class="@CssClass" disabled="@Loading"  type="submit">
+
+@if(Loading)
+{
+    <span class="spinner-border spinner-border-sm"></span>
+
+    <span class="ms-2">
+
+        @LoadingText
+
+    </span>
+}
+else
+{
+    @Text
+}
+
+</button>
+
+@code{
+
+    [Parameter]
+    public string Text { get; set; } = "Save";
+
+    [Parameter]
+    public string LoadingText { get; set; } = "Saving...";
+
+    [Parameter]
+    public string CssClass { get; set; }
+        = "btn btn-primary";
+
+    [Parameter]
+    public bool Loading { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private async Task Clicked()
+    {
+        await OnClick.InvokeAsync();
+    }
+
+}

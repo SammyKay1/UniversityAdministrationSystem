@@ -1,0 +1,149 @@
+using FluentValidation.TestHelper;
+using UniversityAdministrationSystem;
+using Xunit;
+
+namespace UniversityAdministrationSystem.UnitTests.Validators;
+
+public class StudentCreateValidatorTests
+{
+    private readonly StudentCreateValidator _validator = new();
+
+    [Fact]
+    public async Task ValidateAsync_ValidStudent_ReturnsSuccess()
+    {
+        // Arrange
+        var dto = new StudentCreateDto
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            DateOfBirth = DateTime.Today.AddYears(-20),
+            DepartmentId = 1,
+            Address = new AddressDto
+            {
+                AddressLine1 = "123 Main St",
+                City = "Boston",
+                State = "MA",
+                Country = "USA"
+            }
+        };
+
+        // Act
+        var result = await _validator.TestValidateAsync(dto);
+
+        // Assert
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Fact]
+    public async Task ValidateAsync_EmptyFirstName_ReturnsFailure()
+    {
+        // Arrange
+        var dto = new StudentCreateDto
+        {
+            FirstName = "",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            DateOfBirth = DateTime.Today.AddYears(-20),
+            DepartmentId = 1,
+            Address = new AddressDto
+            {
+                AddressLine1 = "123 Main St",
+                City = "Boston",
+                State = "MA",
+                Country = "USA"
+            }
+        };
+
+        // Act
+        var result = await _validator.TestValidateAsync(dto);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.FirstName);
+    }
+
+    [Fact]
+    public async Task ValidateAsync_InvalidEmail_ReturnsFailure()
+    {
+        // Arrange
+        var dto = new StudentCreateDto
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "invalid-email",
+            DateOfBirth = DateTime.Today.AddYears(-20),
+            DepartmentId = 1,
+            Address = new AddressDto
+            {
+                AddressLine1 = "123 Main St",
+                City = "Boston",
+                State = "MA",
+                Country = "USA"
+            }
+        };
+
+        // Act
+        var result = await _validator.TestValidateAsync(dto);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.Email);
+    }
+
+    [Fact]
+    public async Task ValidateAsync_UnderageStudent_ReturnsFailure()
+    {
+        // Arrange
+        var dto = new StudentCreateDto
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            DateOfBirth = DateTime.Today.AddYears(-10),
+            DepartmentId = 1,
+            Address = new AddressDto
+            {
+                AddressLine1 = "123 Main St",
+                City = "Boston",
+                State = "MA",
+                Country = "USA"
+            }
+        };
+
+        // Act
+        var result = await _validator.TestValidateAsync(dto);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.DateOfBirth)
+            .WithErrorMessage("Student must be at least 16 years old.");
+    }
+
+    [Fact]
+    public async Task ValidateAsync_InvalidAddress_ReturnsFailure()
+    {
+        // Arrange
+        var dto = new StudentCreateDto
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            DateOfBirth = DateTime.Today.AddYears(-20),
+            DepartmentId = 1,
+            Address = new AddressDto
+            {
+                AddressLine1 = "",
+                City = "",
+                State = "",
+                Country = ""
+            }
+        };
+
+        // Act
+        var result = await _validator.TestValidateAsync(dto);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.Address.AddressLine1);
+        result.ShouldHaveValidationErrorFor(x => x.Address.City);
+        result.ShouldHaveValidationErrorFor(x => x.Address.State);
+        result.ShouldHaveValidationErrorFor(x => x.Address.Country);
+    }
+}

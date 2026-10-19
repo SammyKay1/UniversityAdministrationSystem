@@ -1,0 +1,114 @@
+<div class="card border-0 shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <div>
+                <h6 class="mb-1">
+                    @Title
+                </h6>
+
+                @if (!string.IsNullOrWhiteSpace(Description))
+                {
+                    <small class="text-muted">
+                        @Description
+                    </small>
+                }
+            </div>
+
+            <div class="d-flex gap-2">
+
+                @if (ShowReset)
+                {
+                    <button type="button"
+                            class="btn btn-outline-secondary btn-sm"
+                            @onclick="OnReset"
+                            disabled="@IsLoading">
+
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>
+
+                        Reset
+
+                    </button>
+                }
+
+                @if (ShowRefresh)
+                {
+                    <button type="button"
+                            class="btn btn-outline-primary btn-sm"
+                            @onclick="OnRefresh"
+                            disabled="@IsLoading">
+
+                        @if (IsLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1"
+                                  role="status"
+                                  aria-hidden="true">
+                            </span>
+
+                            <span>Refreshing...</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+
+                            <span>Refresh</span>
+                        }
+
+                    </button>
+                }
+
+            </div>
+
+        </div>
+
+
+        @if (ChildContent is not null)
+        {
+            <div class="row g-3">
+
+                @ChildContent
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; } = "Filters";
+
+
+    [Parameter]
+    public string Description { get; set; } = "";
+
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+
+    [Parameter]
+    public EventCallback OnReset { get; set; }
+
+
+    [Parameter]
+    public EventCallback OnRefresh { get; set; }
+
+
+    [Parameter]
+    public bool ShowReset { get; set; } = true;
+
+
+    [Parameter]
+    public bool ShowRefresh { get; set; } = true;
+
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+}

@@ -1,0 +1,41 @@
+﻿# Build output
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# IDE-specific settings
+.idea/
+
+# Local databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+
+# Local configuration and secrets
+appsettings.Development.json
+appsettings.*.local.json
+secrets.json
+.env
+.env.*
+!.env.example
+
+# Logs and test output
+*.log
+TestResults/
+coverage/
+coverage.*
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini

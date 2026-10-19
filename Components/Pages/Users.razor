@@ -1,0 +1,39 @@
+
+@page "/users"
+
+
+@inject HttpClient Http
+
+<h3>Users</h3>
+
+@if( users == null){
+    <p>Loading...</p>
+}
+else{
+    <ul>
+        @foreach(User user in users){
+            <li>@user.Name  (@user.Email)</li>
+        }
+    </ul>
+}
+
+
+
+@code{
+
+    List<User>? users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            users = await Http.GetFromJsonAsync<List<User>>("https://jsonplaceholder.typicode.com/users");
+        }
+        catch(Exception ex)
+        {
+            //<p>@ex.Message</p>
+            Console.WriteLine(ex.Message);
+        }
+    }   
+
+}

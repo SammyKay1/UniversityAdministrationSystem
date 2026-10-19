@@ -1,0 +1,547 @@
+@page "/courses/details/{Id:int}"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@attribute [Authorize(Policy = Permissions.Courses.View)]
+
+@inject CourseService CourseService
+@inject NavigationManager Navigation
+
+
+<PageTitle>
+    @(course is null ? "Course Details" : $"{course.CourseCode} - Course Details")
+</PageTitle>
+
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1 class="mb-1">
+                Course Details
+            </h1>
+
+            <p class="text-muted mb-0">
+                View course information, assignment and capacity.
+            </p>
+
+        </div>
+
+
+        <div class="d-flex gap-2">
+
+            <button type="button"
+                    class="btn btn-secondary"
+                    @onclick="Back">
+
+                <i class="bi bi-arrow-left me-1"></i>
+
+                Back
+
+            </button>
+
+
+            @if (course is not null)
+            {
+                <AuthorizeView Policy="@Permissions.Courses.Edit">
+
+                    <Authorized>
+
+                        <button type="button"
+                                class="btn btn-primary"
+                                @onclick="EditCourse">
+
+                            <i class="bi bi-pencil me-1"></i>
+
+                            Edit
+
+                        </button>
+
+                    </Authorized>
+
+                </AuthorizeView>
+            }
+
+        </div>
+
+    </div>
+
+
+    <!-- Loading -->
+
+    @if (isLoading)
+    {
+        <div class="card">
+
+            <div class="card-body text-center py-5">
+
+                <div class="spinner-border"
+                     role="status">
+
+                    <span class="visually-hidden">
+                        Loading...
+                    </span>
+
+                </div>
+
+                <p class="text-muted mt-3 mb-0">
+                    Loading course information...
+                </p>
+
+            </div>
+
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+
+            <div class="d-flex align-items-start">
+
+                <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+
+                <div>
+
+                    <h5 class="alert-heading">
+                        Unable to load course
+                    </h5>
+
+                    <p class="mb-0">
+                        @errorMessage
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+    else if (course is null)
+    {
+        <div class="card">
+
+            <div class="card-body text-center py-5">
+
+                <i class="bi bi-journal-x fs-1 text-muted"></i>
+
+                <h5 class="mt-3">
+                    Course Not Found
+                </h5>
+
+                <p class="text-muted">
+                    The requested course could not be found.
+                </p>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        @onclick="Back">
+
+                    <i class="bi bi-arrow-left me-1"></i>
+
+                    Back to Courses
+
+                </button>
+
+            </div>
+
+        </div>
+    }  
+    else
+    {
+        <div class="row g-4">
+
+            <!-- Main Information -->
+
+            <div class="col-lg-8">
+
+                <div class="card h-100">
+
+                    <div class="card-header
+                                d-flex
+                                justify-content-between
+                                align-items-center">
+
+                        <h5 class="mb-0">
+                            Course Information
+                        </h5>
+
+
+                        @if (course.IsArchived)
+                        {
+                            <span class="badge bg-danger">
+                                Archived
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        }
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <!-- Course Identity -->
+
+                        <div class="mb-4">
+
+                            <div class="d-flex align-items-center gap-3">
+
+                                <div class="rounded-circle
+                                            bg-primary
+                                            text-white
+                                            d-flex
+                                            align-items-center
+                                            justify-content-center"
+                                     style="width:64px;height:64px;">
+
+                                    <i class="bi bi-journal-bookmark fs-3"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Course
+                                    </div>
+
+                                    <h3 class="mb-0">
+                                        @course.Name
+                                    </h3>
+
+                                    <span class="badge bg-secondary mt-1">
+                                        @course.CourseCode
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <hr />
+
+
+                        <!-- Information -->
+
+                        <div class="row g-4 mt-1">
+
+                            <!-- Department -->
+
+                            <div class="col-md-6">
+
+                                <small class="text-muted">
+                                    Department
+                                </small>
+
+                                <div class="mt-1">
+
+                                    @if (string.IsNullOrWhiteSpace(course.Department))
+                                    {
+                                        <span class="text-muted">
+                                            Not assigned
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            @course.Department
+                                        </span>
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Teacher -->
+
+                            <div class="col-md-6">
+
+                                <small class="text-muted">
+                                    Teacher
+                                </small>
+
+                                <div class="mt-1">
+
+                                    @if (string.IsNullOrWhiteSpace(course.TeacherName))
+                                    {
+                                        <span class="text-muted">
+                                            Not assigned
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-semibold">
+                                            @course.TeacherName
+                                        </span>
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Description -->
+
+                            <div class="col-12">
+
+                                <small class="text-muted">
+                                    Description
+                                </small>
+
+                                <div class="mt-2">
+
+                                    @if (string.IsNullOrWhiteSpace(course.Description))
+                                    {
+                                        <span class="text-muted">
+                                            No description provided.
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <p class="mb-0">
+                                            @course.Description
+                                        </p>
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Statistics -->
+
+            <div class="col-lg-4">
+
+                <div class="row g-3">
+
+                    <!-- Credit Hours -->
+
+                    <div class="col-12">
+
+                        <div class="card">
+
+                            <div class="card-body">
+
+                                <div class="d-flex
+                                            justify-content-between
+                                            align-items-center">
+
+                                    <div>
+
+                                        <small class="text-muted">
+                                            Credit Hours
+                                        </small>
+
+                                        <h2 class="mb-0">
+                                            @course.CreditHours
+                                        </h2>
+
+                                    </div>
+
+                                    <div class="fs-2 text-primary">
+
+                                        <i class="bi bi-clock"></i>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Capacity -->
+
+                    <div class="col-12">
+
+                        <div class="card">
+
+                            <div class="card-body">
+
+                                <div class="d-flex
+                                            justify-content-between
+                                            align-items-center">
+
+                                    <div>
+
+                                        <small class="text-muted">
+                                            Capacity
+                                        </small>
+
+                                        <h2 class="mb-0">
+                                            @course.Capacity
+                                        </h2>
+
+                                        <small class="text-muted">
+                                            Maximum students
+                                        </small>
+
+                                    </div>
+
+
+                                    <div class="fs-2 text-success">
+
+                                        <i class="bi bi-people"></i>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Status -->
+
+                    <div class="col-12">
+
+                        <div class="card">
+
+                            <div class="card-body">
+
+                                <div class="d-flex
+                                            justify-content-between
+                                            align-items-center">
+
+                                    <div>
+
+                                        <small class="text-muted">
+                                            Course Status
+                                        </small>
+
+                                        <div class="mt-2">
+
+                                            @if (course.IsArchived)
+                                            {
+                                                <span class="badge bg-danger">
+                                                    Archived
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">
+                                                    Active
+                                                </span>
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="fs-2
+                                                @(course.IsArchived
+                                                    ? "text-danger"
+                                                    : "text-success")">
+
+                                        <i class="bi bi-circle-fill"></i>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+</div>
+
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+
+    private CourseDetailsDto? course;
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadCourseAsync();
+    }
+
+
+    private async Task LoadCourseAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+        course = null;
+
+        try
+        {
+            course =
+                await CourseService
+                    .GetDetailsAsync(Id);
+
+            if (course is null)
+            {
+                // Not found is handled by the UI separately.
+                return;
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage =
+                "Unable to load course information.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private void EditCourse()
+    {
+        Navigation.NavigateTo(
+            $"/courses/edit/{Id}");
+    }
+
+
+    private void Back()
+    {
+        Navigation.NavigateTo(
+            "/courses");
+    }
+
+}

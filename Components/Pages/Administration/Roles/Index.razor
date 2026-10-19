@@ -1,0 +1,544 @@
+@page "/administration/roles"
+
+@using UniversityAdministrationSystem.Components.Shared
+@using UniversityAdministrationSystem.Components.Shared.Lists
+@using UniversityAdministrationSystem.Components.Shared.Actions
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+
+@attribute [Authorize(Policy = Permissions.Roles.Manage)]
+
+@inject RoleService RoleService
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+
+<PageTitle>Roles</PageTitle>
+
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1 class="mb-1">
+                Roles
+            </h1>
+
+            <p class="text-muted mb-0">
+                Manage application roles and their permissions.
+            </p>
+
+        </div>
+
+
+        <button class="btn btn-primary" @onclick="OpenCreateRole">
+
+            <i class="bi bi-plus-lg me-1"></i>
+
+            Create Role
+
+        </button>
+
+    </div>
+
+
+    <!-- Error -->
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible">
+
+            @errorMessage
+
+            <button type="button" class="btn-close" @onclick="ClearError">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- Search / Summary -->
+
+    <div class="card mb-4">
+
+        <div class="card-body">
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Search Roles
+                    </label>
+
+                    <input class="form-control" placeholder="Search by role name..." @bind="searchTerm"
+                           @bind:event="oninput" />
+
+                </div>
+
+
+                <div class="col-md-6 text-md-end">
+
+                    <div class="text-muted">
+
+                        <strong>
+                            @FilteredRoles.Count()
+                        </strong>
+
+                        role@(FilteredRoles.Count() == 1 ? "" : "s")
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Roles -->
+
+    @if (isLoading)
+    {
+        <div class="card">
+
+            <div class="card-body text-center py-5">
+
+                <div class="spinner-border" role="status">
+                </div>
+
+                <p class="text-muted mt-3 mb-0">
+                    Loading roles...
+                </p>
+
+            </div>
+
+        </div>
+    }
+    else if (!FilteredRoles.Any())
+    {
+        <div class="card">
+
+            <div class="card-body">
+
+                <EmptyState Title="No roles found" Message="No roles match your current search." />
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div class="card">
+
+            <div class="card-header">
+
+                <div class="d-flex justify-content-between
+                    align-items-center">
+
+                    <h5 class="mb-0">
+                        Application Roles
+                    </h5>
+
+                    <span class="badge bg-secondary">
+                        @FilteredRoles.Count()
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th>
+                                    Role
+                                </th>
+
+                                <th>
+                                    Users
+                                </th>
+
+                                <th>
+                                    Permissions
+                                </th>
+
+                                <th class="text-end">
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @foreach (var role in FilteredRoles)
+                            {
+                                <tr>
+
+                                    <!-- Role -->
+
+                                    <td>
+
+                                        <div class="d-flex
+                                            align-items-center">
+
+                                            <div class="rounded-circle
+                                                bg-primary
+                                                text-white
+                                                d-flex
+                                                align-items-center
+                                                justify-content-center
+                                                me-3" style="width:40px;height:40px;">
+
+                                                <i class="bi bi-shield"></i>
+
+                                            </div>
+
+
+                                            <div>
+
+                                                <div class="fw-semibold">
+                                                    @role.Name
+                                                </div>
+
+                                                <small class="text-muted">
+                                                    Application role
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- Users -->
+
+                                    <td>
+
+                                        <span class="badge bg-info text-dark">
+                                            @role.UserCount
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- Permissions -->
+
+                                    <td>
+
+                                        <span class="badge bg-secondary">
+                                            @role.PermissionCount
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- Actions -->
+
+                                    <td class="text-end">
+
+                                        <TableActions>
+
+                                            <TableAction Icon="bi bi-pencil" CssClass="table-action-edit"
+                                                         OnClick="() => OpenEditRole(role)">
+
+                                                Edit
+
+                                            </TableAction>
+
+
+                                            <TableAction Icon="bi bi-shield-lock" OnClick="() => OpenPermissions(role)">
+
+                                                Permissions
+
+                                            </TableAction>
+
+
+                                            <TableAction Icon="bi bi-trash" CssClass="table-action-danger"
+                                                         OnClick="() => DeleteRole(role)">
+
+                                                Delete
+
+                                            </TableAction>
+
+                                        </TableActions>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+</div>
+
+
+<!-- Role Modal -->
+
+<Modal Visible="@showRoleModal" Title="@roleModalTitle" OnClose="CloseRoleModal">
+
+    <RoleForm Model="@roleForm" IsSubmitting="@isSubmitting" ErrorMessage="@formError" OnSave="SaveRole"
+              OnCancel="CloseRoleModal" />
+
+</Modal>
+
+
+<!-- Permission Modal -->
+
+<Modal Visible="@showPermissionModal" Title="@($"Permissions — {selectedRole?.Name}")" Size="large"
+       OnClose="ClosePermissionModal">
+
+    @if (selectedRole is not null)
+    {
+        <RolePermissionEditor RoleId="@selectedRole.Id" OnSaved="PermissionsSaved" OnCancel="ClosePermissionModal" />
+    }
+
+</Modal>
+
+
+@code {
+
+    private List<RoleDto> roles = [];
+
+    private string searchTerm = string.Empty;
+
+    private bool isLoading = true;
+
+    private bool showRoleModal;
+
+    private bool showPermissionModal;
+
+    private bool isSubmitting;
+
+    private string roleModalTitle = string.Empty;
+
+    private string? formError;
+
+    private string? errorMessage;
+
+    private RoleFormModel roleForm = new();
+
+    private string? editingRoleId;
+
+    private RoleDto? selectedRole;
+
+
+    private IEnumerable<RoleDto> FilteredRoles => string.IsNullOrWhiteSpace(searchTerm) ? roles
+            : roles.Where(role => role.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRolesAsync();
+    }
+
+
+    private async Task LoadRolesAsync()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            roles = await RoleService.GetRolesAsync();
+        }
+        catch (Exception)
+        {
+            errorMessage = "Unable to load roles.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private void OpenCreateRole()
+    {
+        editingRoleId = null;
+
+        roleModalTitle = "Create Role";
+
+        roleForm = new RoleFormModel();
+
+        formError = null;
+
+        showRoleModal = true;
+    }
+
+
+    private void OpenEditRole(RoleDto role)
+    {
+        editingRoleId = role.Id;
+
+        roleModalTitle = "Edit Role";
+
+        roleForm = new RoleFormModel
+        {
+            Name = role.Name
+        };
+
+        formError = null;
+
+        showRoleModal = true;
+    }
+
+
+    private void CloseRoleModal()
+    {
+        showRoleModal = false;
+
+        formError = null;
+    }
+
+
+    private async Task SaveRole(RoleFormModel model)
+    {
+        if (isSubmitting)
+            return;
+
+        isSubmitting = true;
+        formError = null;
+
+        try
+        {
+            IdentityResult result;
+
+            if (editingRoleId is null)
+            {
+                result = await RoleService.CreateRoleAsync(model.Name);
+            }
+            else
+            {
+                result = await RoleService.UpdateRoleAsync(editingRoleId, model.Name);
+            }
+
+            if (!result.Succeeded)
+            {
+                formError = string.Join(" ", result.Errors.Select(
+                            x => x.Description));
+
+                return;
+            }
+
+            var wasCreating = editingRoleId is null;
+
+            showRoleModal = false;
+
+            await LoadRolesAsync();
+
+            NotificationService.Success(wasCreating ? "Role created successfully." : "Role updated successfully.");
+        }
+        catch (Exception)
+        {
+            formError = "Unable to save the role.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+
+    private async Task DeleteRole(RoleDto role)
+    {
+        if (role.UserCount > 0)
+        {
+            NotificationService.Error("This role cannot be deleted because it is assigned to users.");
+
+            return;
+        }
+
+
+        var confirmed = await DialogService.ConfirmAsync("Delete Role",
+                $"Are you sure you want to delete " +
+                $"the '{role.Name}' role?");
+
+
+        if (!confirmed)
+            return;
+
+
+        try
+        {
+            var result = await RoleService.DeleteRoleAsync(role.Id);
+
+
+            if (!result.Succeeded)
+            {
+                NotificationService.Error(string.Join(" ", result.Errors.Select(x => x.Description)));
+
+                return;
+            }
+
+
+            await LoadRolesAsync();
+
+            NotificationService.Success($"Role '{role.Name}' was deleted successfully.");
+        }
+        catch (Exception)
+        {
+            NotificationService.Error("Unable to delete the role.");
+        }
+    }
+
+
+    private void OpenPermissions(RoleDto role)
+    {
+        selectedRole = role;
+
+        showPermissionModal = true;
+    }
+
+
+    private void ClosePermissionModal()
+    {
+        showPermissionModal = false;
+
+        selectedRole = null;
+    }
+
+
+    private async Task PermissionsSaved()
+    {
+        ClosePermissionModal();
+
+        await LoadRolesAsync();
+
+        NotificationService.Success("Role permissions updated successfully.");
+    }
+
+
+    private void ClearError()
+    {
+        errorMessage = null;
+    }
+
+}

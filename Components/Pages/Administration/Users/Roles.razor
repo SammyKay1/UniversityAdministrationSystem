@@ -1,0 +1,255 @@
+@page "/administration/users/{Id}/roles"
+
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Policy = Permissions.Users.ManageRoles)]
+
+@inject UserAdministrationService UserAdministrationService
+
+@inject NavigationManager Navigation
+
+
+<PageTitle>User Roles</PageTitle>
+
+
+@if (isLoading)
+{
+    <div class="text-center py-5">
+
+        <div class="spinner-border"></div>
+
+        <div class="mt-2">
+            Loading roles...
+        </div>
+
+    </div>
+}
+else if (model is null)
+{
+    <div class="alert alert-danger">
+        User could not be found.
+    </div>
+}
+else
+{
+    <div class="mb-4">
+
+        <h1>User Roles</h1>
+
+        <p class="text-muted">
+            Manage the roles assigned to
+            <strong>@model.UserName</strong>.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <h5 class="card-title mb-4">
+                Available Roles
+            </h5>
+
+
+            @foreach (var role in model.AvailableRoles)
+            {
+                <div class="form-check mb-3">
+
+                    <input type="checkbox" class="form-check-input" id="@role" checked="@IsSelected(role)"
+                           @onchange="e => ToggleRole(role, e)" />
+
+                    <label class="form-check-label" for="@role">
+
+                        @role
+
+                    </label>
+
+                </div>
+            }
+
+
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="alert alert-danger mt-4">
+                    @errorMessage
+                </div>
+            }
+
+
+            @if (!string.IsNullOrWhiteSpace(successMessage))
+            {
+                <div class="alert alert-success mt-4">
+                    @successMessage
+                </div>
+            }
+
+        </div>
+
+
+        <div class="card-footer d-flex justify-content-end gap-2">
+
+            <button type="button" class="btn btn-secondary" @onclick="Cancel">
+
+                Cancel
+
+            </button>
+
+
+            <button type="button" class="btn btn-primary" disabled="@isSaving" @onclick="SaveAsync">
+
+                @if (isSaving)
+                {
+                    <span class="spinner-border spinner-border-sm me-2">
+                    </span>
+
+                    <div>
+                        Saving...
+                    </div>
+
+                }
+                else
+                {
+                    <span>
+                        Save Roles
+                    </span>
+                }
+
+            </button>
+
+        </div>
+
+    </div>
+}
+
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+
+    private UserRolesDto? model;
+
+    private bool isLoading = true;
+
+    private bool isSaving;
+
+    private string? errorMessage;
+
+    private string? successMessage;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        model =
+            await UserAdministrationService
+                .GetUserRolesAsync(Id);
+
+        isLoading = false;
+    }
+
+
+    private bool IsSelected(string role)
+    {
+        return model?.SelectedRoles
+            .Contains(
+                role,
+                StringComparer.OrdinalIgnoreCase)
+            ?? false;
+    }
+
+
+    private void ToggleRole(
+        string role,
+        ChangeEventArgs e)
+    {
+        if (model is null)
+            return;
+
+
+        var isChecked =
+            e.Value is bool value && value;
+
+
+        if (isChecked)
+        {
+            if (!model.SelectedRoles.Contains(
+                    role,
+                    StringComparer.OrdinalIgnoreCase))
+            {
+                model.SelectedRoles.Add(role);
+            }
+        }
+        else
+        {
+            var existing =
+                model.SelectedRoles
+                    .FirstOrDefault(
+                        x => string.Equals(
+                            x,
+                            role,
+                            StringComparison.OrdinalIgnoreCase));
+
+            if (existing is not null)
+            {
+                model.SelectedRoles.Remove(existing);
+            }
+        }
+    }
+
+
+    private async Task SaveAsync()
+    {
+        if (model is null)
+            return;
+
+
+        isSaving = true;
+
+        errorMessage = null;
+
+        successMessage = null;
+
+
+        try
+        {
+            var result =
+                await UserAdministrationService
+                    .UpdateUserRolesAsync(
+                        model.UserId,
+                        model.SelectedRoles);
+
+
+            if (result.Succeeded)
+            {
+                successMessage =  "User roles updated successfully.";
+
+                await Task.Delay(3000);
+
+                Navigation.NavigateTo( "/administration/users");
+
+                return;
+            }
+
+
+            errorMessage =
+                string.Join(
+                    " ",
+                    result.Errors.Select(
+                        x => x.Description));
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo(
+            "/administration/users");
+    }
+}

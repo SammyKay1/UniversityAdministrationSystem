@@ -1,0 +1,248 @@
+
+@page "/administration/users/edit/{Id}"
+
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Policy = Permissions.Users.Edit)]
+
+@inject UserAdministrationService UserAdministrationService
+@inject NavigationManager Navigation
+
+<PageTitle>Edit User</PageTitle>
+
+
+@if (isLoading)
+{
+    <div class="text-center py-5">
+
+        <div class="spinner-border"></div>
+
+        <div class="mt-2">
+            Loading user...
+        </div>
+
+    </div>
+}
+else if (user is null)
+{
+    <div class="alert alert-danger">
+        User could not be found.
+    </div>
+}
+else
+{
+    <div class="mb-4">
+
+        <h1>Edit User</h1>
+
+        <p class="text-muted">
+            Update the user's account information.
+        </p>
+
+    </div>
+
+
+    <EditForm Model="@user"
+              OnValidSubmit="SaveAsync"
+              FormName="edit-user">
+
+        <DataAnnotationsValidator />
+
+        <ValidationSummary />
+
+
+        <div class="card">
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            First Name
+                        </label>
+
+                        <InputText
+                            class="form-control"
+                            @bind-Value="user.FirstName" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Last Name
+                        </label>
+
+                        <InputText
+                            class="form-control"
+                            @bind-Value="user.LastName" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Username
+                        </label>
+
+                        <InputText
+                            class="form-control"
+                            @bind-Value="user.UserName" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <InputText
+                            type="email"
+                            class="form-control"
+                            @bind-Value="user.Email" />
+
+                    </div>
+
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="form-check">
+
+                            <InputCheckbox
+                                class="form-check-input"
+                                @bind-Value="user.EmailConfirmed" />
+
+                            <label class="form-check-label">
+                                Email confirmed
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                @if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    <div class="alert alert-danger mt-3">
+                        @errorMessage
+                    </div>
+                }
+
+            </div>
+
+
+            <div class="card-footer d-flex justify-content-end gap-2">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        @onclick="Cancel">
+
+                    Cancel
+
+                </button>
+
+
+                <button type="submit"
+                        class="btn btn-primary"
+                        disabled="@isSaving">
+
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2">
+                        </span>
+                        
+                        <div>
+                            Saving...
+                        </div>
+                        
+                    }
+                    else
+                    {
+                        <span>Save Changes</span>
+                    }
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </EditForm>
+}
+
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+
+    private EditUserDto? user;
+
+    private bool isLoading = true;
+
+    private bool isSaving;
+
+    private string? errorMessage;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        user =
+            await UserAdministrationService
+                .GetUserForEditAsync(Id);
+
+        isLoading = false;
+    }
+
+
+    private async Task SaveAsync()
+    {
+        if (user is null)
+            return;
+
+        isSaving = true;
+
+        errorMessage = null;
+
+        try
+        {
+            var result =
+                await UserAdministrationService
+                    .UpdateUserAsync(user);
+
+            if (result.Succeeded)
+            {
+                Navigation.NavigateTo(
+                    "/administration/users");
+
+                return;
+            }
+
+            errorMessage =
+                string.Join(
+                    " ",
+                    result.Errors.Select(
+                        x => x.Description));
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo(
+            "/administration/users");
+    }
+}

@@ -1,0 +1,382 @@
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@implements IDisposable
+@inject NavigationManager Navigation
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@inject AdminLayoutState LayoutState
+
+<aside
+    class="admin-sidebar @(LayoutState.IsSidebarCollapsed ? "collapsed" : "") @(LayoutState.IsMobileDrawerOpen ? "drawer-open" : "")"
+    aria-hidden="@(!LayoutState.IsMobileDrawerOpen)">
+
+    <div class="sidebar-brand">
+
+        <div class="brand-icon">
+            🎓
+        </div>
+
+        <div>
+            <div class="brand-title">
+                University
+            </div>
+
+            <div class="brand-subtitle">
+                Administration
+            </div>
+        </div>
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+        <!-- Dashboard -->
+
+        <AuthorizeView>
+
+            <Authorized>
+
+                <NavLink href="/dashboard" Match="NavLinkMatch.All" class="sidebar-link">
+
+                    <span class="sidebar-icon">🏠</span>
+
+                    <span>Dashboard</span>
+
+                </NavLink>
+
+            </Authorized>
+
+        </AuthorizeView>
+
+
+        <!-- Academic -->
+
+        <div class="sidebar-section">
+            <AuthorizeView Policy="@Permissions.Students.View">
+
+                <Authorized>
+
+                    <div class="sidebar-section-title">
+                        Academic
+                    </div>
+                </Authorized>
+
+            </AuthorizeView>
+
+            <AuthorizeView Policy="@Permissions.Students.View">
+
+                <Authorized>
+
+                    <NavLink href="/students" class="sidebar-link">
+
+                        <span class="sidebar-icon">👨‍🎓</span>
+
+                        <span>Students</span>
+
+                    </NavLink>
+
+                </Authorized>
+
+            </AuthorizeView>
+
+
+            <AuthorizeView Policy="@Permissions.Teachers.View">
+
+                <Authorized>
+
+                    <NavLink href="/administration/teachers" class="sidebar-link">
+
+                        <span class="sidebar-icon">👨‍🏫</span>
+
+                        <span>Teachers</span>
+
+                    </NavLink>
+
+                </Authorized>
+
+            </AuthorizeView>
+
+
+            <AuthorizeView Policy="@Permissions.Departments.View">
+
+                <Authorized>
+
+                    <NavLink href="/administration/departments" class="sidebar-link">
+
+                        <span class="sidebar-icon">🏢</span>
+
+                        <span>Departments</span>
+
+                    </NavLink>
+
+                </Authorized>
+
+            </AuthorizeView>
+
+
+            <AuthorizeView Policy="@Permissions.Courses.View">
+
+                <Authorized>
+
+                    <NavLink href="/courses" class="sidebar-link">
+
+                        <span class="sidebar-icon">📚</span>
+
+                        <span>Courses</span>
+
+                    </NavLink>
+
+                </Authorized>
+
+            </AuthorizeView>
+
+
+            <AuthorizeView Policy="@Permissions.Students.Enrollment">
+
+                <Authorized>
+
+                    <NavLink href="/enrollments" class="sidebar-link">
+
+                        @*<span class="sidebar-icon">📝</span>
+
+                        <span>Enrollments</span> *@
+
+                    </NavLink>
+
+                </Authorized>
+
+            </AuthorizeView>
+
+        </div>
+
+
+        <!-- Reports -->
+
+        <AuthorizeView Policy="@Permissions.Reports.View">
+
+            <Authorized>
+                <div class="sidebar-section">
+
+                    <button type="button" class="sidebar-section-toggle" @onclick="ToggleReports"
+                            aria-expanded="@reportsExpanded" aria-controls="reports-submenu">
+
+                        <span class="sidebar-section-title">
+
+                            <span>
+                                Reports
+                            </span>
+
+                        </span>
+
+                        <span class="sidebar-chevron">
+                            @(reportsExpanded ? "▾" : "▸")
+                        </span>
+
+                    </button>
+
+
+                    @if (reportsExpanded)
+                    {
+                        <div class="sidebar-submenu" id="reports-submenu" role="region" aria-label="Reports submenu">
+
+
+                            <NavLink href="/reports/departments" class="sidebar-link sidebar-child">
+
+                                <span class="sidebar-icon">🏢</span>
+
+                                <span>Department Report</span>
+
+                            </NavLink>
+
+
+                            <NavLink href="/reports/enrollments" class="sidebar-link sidebar-child">
+
+                                <span class="sidebar-icon">📝</span>
+
+                                <span>Enrollment Report</span>
+
+                            </NavLink>
+
+
+                            <NavLink href="/reports/academic-performance" class="sidebar-link sidebar-child">
+
+                                <span class="sidebar-icon">🎓</span>
+
+                                <span>Academic Performance</span>
+
+                            </NavLink>
+
+                        </div>
+                    }
+
+                </div>
+
+            </Authorized>
+
+        </AuthorizeView>
+
+
+        <!-- Administration -->
+
+        <div class="sidebar-section">
+            <AuthorizeView Policy="@Permissions.Users.View">
+
+                <Authorized>
+
+                    <button type="button" class="sidebar-section-toggle" @onclick="ToggleAdministration"
+                            aria-expanded="@administrationExpanded" aria-controls="admin-submenu">
+
+                        <span class="sidebar-section-title">
+
+                            <span>
+                                Administration
+                            </span>
+
+                        </span>
+
+                        <span class="sidebar-chevron">
+                            <i class="bi bi-chevron-down ms-2"></i>
+                        </span>
+
+                    </button>
+                </Authorized>
+
+            </AuthorizeView>
+
+
+
+            @if (administrationExpanded)
+            {
+                <div class="sidebar-submenu" id="admin-submenu" role="region" aria-label="Administration submenu">
+
+                    <AuthorizeView Policy="@Permissions.Users.View">
+
+                        <Authorized>
+
+                            <NavLink href="/administration/users" class="sidebar-link sidebar-child">
+
+                                <span class="sidebar-icon">👥</span>
+
+                                <span>Users</span>
+
+                            </NavLink>
+
+                        </Authorized>
+
+                    </AuthorizeView>
+
+
+                    <AuthorizeView Policy="@Permissions.Roles.Manage">
+
+                        <Authorized>
+
+                            <NavLink href="/administration/roles" class="sidebar-link sidebar-child">
+
+                                <span class="sidebar-icon">🛡</span>
+
+                                <span>Roles</span>
+
+                            </NavLink>
+
+                        </Authorized>
+
+                    </AuthorizeView>
+
+
+                    <AuthorizeView Policy="@Permissions.Security.Manage">
+
+                        <Authorized>
+
+                            <NavLink href="/administration/permissions" class="sidebar-link sidebar-child">
+
+                                @*<span class="sidebar-icon">🔐</span>
+                               <span>Permissions</span> *@
+
+                            </NavLink>
+
+                        </Authorized>
+
+                    </AuthorizeView>
+
+                </div>
+            }
+
+        </div>
+
+    </nav>
+
+
+    <div class="sidebar-footer">
+
+        <div class="sidebar-version">
+            University Admin
+        </div>
+
+    </div>
+
+</aside>
+
+
+@code {
+
+    private bool reportsExpanded;
+
+    private bool administrationExpanded;
+
+
+    protected override void OnInitialized()
+    {
+        UpdateExpandedSections();
+
+        LayoutState.OnChange += StateHasChanged;
+
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+
+    private void ToggleReports()
+    {
+        reportsExpanded = !reportsExpanded;
+    }
+
+
+    private void ToggleAdministration()
+    {
+        administrationExpanded = !administrationExpanded;
+    }
+
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateExpandedSections();
+
+        if (LayoutState.IsMobileDrawerOpen)
+        {
+            LayoutState.CloseMobileDrawer();
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+
+    private void UpdateExpandedSections()
+    {
+        var path = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        reportsExpanded = path.StartsWith("reports/", StringComparison.OrdinalIgnoreCase);
+
+        administrationExpanded = path.StartsWith("administration/", StringComparison.OrdinalIgnoreCase);
+    }
+
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+
+        LayoutState.OnChange -= StateHasChanged;
+    }
+
+}

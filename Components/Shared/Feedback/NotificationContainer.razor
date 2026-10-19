@@ -1,0 +1,68 @@
+
+@inject NotificationService Notifications
+
+@implements IDisposable
+
+<div class="position-fixed  top-0 end-0 p-3" style="z-index:2000">
+
+    @foreach(var item in Notifications.Notifications)
+    {
+        <div class="alert @GetCss(item.Type)
+                    alert-dismissible
+                    fade
+                    show">
+
+            @item.Message
+
+            <button class="btn-close"
+                    @onclick="() => Close(item.Id)">
+            </button>
+           
+
+        </div>
+    }
+
+</div>
+
+
+
+@code{
+
+    protected override void OnInitialized()
+    {
+        Notifications.OnChange += Refresh;
+    }
+
+    private void Refresh()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Close(Guid id)
+    {
+        Notifications.Remove(id);
+    }
+
+    private static string GetCss(NotificationType type)
+    {
+        return type switch
+        {
+            NotificationType.Success
+                => "alert-success",
+
+            NotificationType.Error
+                => "alert-danger",
+
+            NotificationType.Warning
+                => "alert-warning",
+
+            _ => "alert-info"
+        };
+    }
+
+    public void Dispose()
+    {
+        Notifications.OnChange -= Refresh;
+    }
+
+}

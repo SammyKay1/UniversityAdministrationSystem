@@ -1,0 +1,556 @@
+
+@page "/"
+@page "/dashboard"
+
+@using UniversityAdministrationSystem.Components.Shared
+@using UniversityAdministrationSystem.Components.Shared.Feedback
+@using UniversityAdministrationSystem.Components.Shared.Layout
+
+@inject DashboardService DashboardService
+@inject NotificationService Notification
+
+@attribute [Authorize]
+
+
+<NotificationContainer />
+
+<PageHeader Title="Dashboard" />
+
+
+@if (dashboard is null)
+{
+    <div class="dashboard-loading">
+
+        <div class="spinner-border text-primary"
+             role="status">
+
+            <span class="visually-hidden">
+                Loading...
+            </span>
+
+        </div>
+
+        <span>
+            Loading dashboard...
+        </span>
+
+    </div>
+}
+else
+{
+    <!-- Statistics -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    👨‍🎓
+                </div>
+
+                <div>
+
+                    <div class="stat-label">
+                        Students
+                    </div>
+
+                    <div class="stat-value">
+                        @dashboard.TotalStudents
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    👨‍🏫
+                </div>
+
+                <div>
+
+                    <div class="stat-label">
+                        Teachers
+                    </div>
+
+                    <div class="stat-value">
+                        @dashboard.TotalTeachers
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    📚
+                </div>
+
+                <div>
+
+                    <div class="stat-label">
+                        Courses
+                    </div>
+
+                    <div class="stat-value">
+                        @dashboard.TotalCourses
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="dashboard-stat-card">
+
+                <div class="stat-icon">
+                    📝
+                </div>
+
+                <div>
+
+                    <div class="stat-label">
+                        Enrollments
+                    </div>
+
+                    <div class="stat-value">
+                        @dashboard.TotalEnrollments
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Secondary statistics -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-xl-4">
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <h5>
+                        Enrollment Status
+                    </h5>
+
+                </div>
+
+                <div class="dashboard-card-body">
+
+                    <div class="status-row">
+
+                        <span>
+                            Active
+                        </span>
+
+                        <strong>
+                            @dashboard.ActiveEnrollments
+                        </strong>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <span>
+                            Completed
+                        </span>
+
+                        <strong>
+                            @dashboard.CompletedEnrollments
+                        </strong>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <span>
+                            Dropped
+                        </span>
+
+                        <strong>
+                            @dashboard.DroppedEnrollments
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-4">
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <h5>
+                        Academic Overview
+                    </h5>
+
+                </div>
+
+                <div class="dashboard-card-body">
+
+                    <div class="status-row">
+
+                        <span>
+                            Departments
+                        </span>
+
+                        <strong>
+                            @dashboard.TotalDepartments
+                        </strong>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <span>
+                            Teachers
+                        </span>
+
+                        <strong>
+                            @dashboard.TotalTeachers
+                        </strong>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <span>
+                            Active Courses
+                        </span>
+
+                        <strong>
+                            @dashboard.TotalCourses
+                        </strong>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <span>
+                            Archived Courses
+                        </span>
+
+                        <strong>
+                            @dashboard.ArchivedCourses
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-4">
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <h5>
+                        Quick Actions
+                    </h5>
+
+                </div>
+
+                <div class="dashboard-card-body">
+
+                    <div class="quick-actions">
+
+                        <a href="/students/create"
+                           class="quick-action">
+
+                            <span>👨‍🎓</span>
+
+                            <span>
+                                Add Student
+                            </span>
+
+                        </a>
+
+
+                        <a href="/teachers/create"
+                           class="quick-action">
+
+                            <span>👨‍🏫</span>
+
+                            <span>
+                                Add Teacher
+                            </span>
+
+                        </a>
+
+
+                        <a href="/courses/create"
+                           class="quick-action">
+
+                            <span>📚</span>
+
+                            <span>
+                                Create Course
+                            </span>
+
+                        </a>
+
+
+                        <a href="/departments/create"
+                           class="quick-action">
+
+                            <span>🏢</span>
+
+                            <span>
+                                Add Department
+                            </span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Department statistics -->
+
+    <div class="dashboard-card mb-4">
+
+        <div class="dashboard-card-header">
+
+            <h5>
+                Department Overview
+            </h5>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table dashboard-table mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Department
+                        </th>
+
+                        <th>
+                            Students
+                        </th>
+
+                        <th>
+                            Teachers
+                        </th>
+
+                        <th>
+                            Courses
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                @foreach (var department
+                    in dashboard.DepartmentStatistics)
+                {
+                    <tr>
+
+                        <td>
+                            @department.DepartmentName
+                        </td>
+
+                        <td>
+                            @department.StudentCount
+                        </td>
+
+                        <td>
+                            @department.TeacherCount
+                        </td>
+
+                        <td>
+                            @department.CourseCount
+                        </td>
+
+                    </tr>
+                }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- Recent enrollments -->
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-header">
+
+            <h5>
+                Recent Enrollments
+            </h5>
+
+            <a href="/students"   class="dashboard-view-all">
+
+                View Students
+
+            </a>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table dashboard-table mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Student
+                        </th>
+
+                        <th>
+                            Course
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Grade
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                @foreach (var enrollment  in dashboard.RecentEnrollments)
+                {
+                    <tr>
+
+                        <td>
+                            @enrollment.StudentName
+                        </td>
+
+                        <td>
+
+                            <div>
+                                @enrollment.CourseName
+                            </div>
+
+                            <small class="text-muted">
+                                @enrollment.CourseCode
+                            </small>
+
+                        </td>
+
+                        <td>
+                            @enrollment.EnrollmentDate.ToLocalTime().ToShortDateString()
+                        </td>
+
+                        <td>
+                            @enrollment.Grade
+                        </td>
+
+                        <td>
+
+                            <span class="status-badge  status-@enrollment.Status.ToString().ToLower()">
+
+                                @enrollment.Status
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+                }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+}
+
+
+@code {
+
+    private DashboardDto? dashboard;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            dashboard =   await DashboardService.GetDashboardAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            Notification.Error(
+                "Unable to load dashboard.");
+        }
+    }
+
+}

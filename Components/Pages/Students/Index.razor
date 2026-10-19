@@ -1,0 +1,576 @@
+@page "/students"
+
+@using UniversityAdministrationSystem.Components.Shared
+@using UniversityAdministrationSystem.Components.Shared.Actions
+@using UniversityAdministrationSystem.Components.Shared.Feedback
+@using UniversityAdministrationSystem.Components.Shared.Layout
+@using UniversityAdministrationSystem.Components.Shared.Lists
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject StudentService StudentService
+@inject NavigationManager Navigation
+@inject NotificationService Notification
+@inject IDialogService DialogService
+
+@implements IDisposable
+
+@attribute [Authorize(Policy = Permissions.Students.View)]
+
+
+<NotificationContainer />
+
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1>
+                Students
+            </h1>
+
+            <p class="text-muted mb-0">
+                Manage and maintain university student records.
+            </p>
+
+        </div>
+
+
+        <AuthorizeView Policy="@Permissions.Students.Create">
+
+            <Authorized>
+
+                <button type="button" class="btn btn-primary" @onclick="Add">
+
+                    <i class="bi bi-plus-lg me-1"></i>
+
+                    New Student
+
+                </button>
+
+            </Authorized>
+
+        </AuthorizeView>
+
+    </div>
+
+
+    <!-- Search / Filters -->
+
+    <div class="card mb-4">
+
+        <div class="card-body">
+
+            <div class="row g-3 align-items-end">
+
+                <!-- Search -->
+
+                <div class="col-md-8">
+
+                    <label class="form-label">
+                        Search
+                    </label>
+
+                    <SearchBox @bind-value="request.Search" @bind-value:after="OnSearchChanged" />
+
+                </div>
+
+
+                <!-- Page Size -->
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Page Size
+                    </label>
+
+                    <PageSizeSelector SelectedPageSize="@request.PageSize" OnChanged="OnPageSizeChanged" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Loading -->
+
+    @if (isLoading)
+    {
+        <div class="card">
+
+            <div class="card-body text-center py-5">
+
+                <div class="spinner-border" role="status">
+
+                    <span class="visually-hidden">
+                        Loading...
+                    </span>
+
+                </div>
+
+                <p class="text-muted mt-3 mb-0">
+                    Loading students...
+                </p>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+
+        <!-- Student Table -->
+
+        <div class="card">
+
+            <div class="card-body p-0">
+
+                @if (!pagedStudents.Items.Any())
+                {
+                    <div class="text-center py-5">
+
+                        <i class="bi bi-person-x fs-1 text-muted"></i>
+
+                        <p class="text-muted mt-3 mb-0">
+                            No students found.
+                        </p>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+
+                                    <th>
+
+                                        <SortableHeader Title="Name" Column="LastName" CurrentColumn="@request.SortColumn"
+                                                        Descending="@request.SortDescending" OnSort="OnSortChanged" />
+
+                                    </th>
+
+
+                                    <th>
+
+                                        <SortableHeader Title="Email" Column="Email" CurrentColumn="@request.SortColumn"
+                                                        Descending="@request.SortDescending" OnSort="OnSortChanged" />
+
+                                    </th>
+
+
+                                    <th>
+                                        Department
+                                    </th>
+
+
+                                    <th>
+                                        Status
+                                    </th>
+
+
+                                    <th class="text-end">
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @foreach (var student in pagedStudents.Items)
+                                {
+                                    <tr>
+
+                                        <!-- Student -->
+
+                                        <td>
+
+                                            <div class="fw-semibold">
+                                                @student.FullName
+                                            </div>
+
+                                        </td>
+
+
+                                        <!-- Email -->
+
+                                        <td>
+
+                                            <a href="mailto:@student.Email">
+                                                @student.Email
+                                            </a>
+
+                                        </td>
+
+
+                                        <!-- Department -->
+
+                                        <td>
+
+                                            <span class="badge bg-secondary">
+                                                @student.Department
+                                            </span>
+
+                                        </td>
+
+
+                                        <!-- Status -->
+
+                                        <td>
+
+                                            <span class="@GetStatusClass(student.Status)">
+                                                @student.Status
+                                            </span>
+
+                                        </td>
+
+
+                                        <!-- Actions -->
+
+                                        <td class="text-end">
+
+                                            <TableActions>
+
+                                                <TableAction Icon="bi bi-eye" OnClick="() => ViewDetails(student.Id)">
+
+                                                    View
+
+                                                </TableAction>
+
+
+                                                <AuthorizeView Policy="@Permissions.Students.Edit">
+
+                                                    <Authorized>
+
+                                                        <TableAction Icon="bi bi-pencil" OnClick="() => Edit(student.Id)">
+
+                                                            Edit
+
+                                                        </TableAction>
+
+                                                    </Authorized>
+
+                                                </AuthorizeView>
+
+
+                                                <TableAction Icon="bi bi-journal-text" OnClick="() => OpenEnrollments(student.Id)">
+
+                                                    Enrollments
+
+                                                </TableAction>
+
+
+                                                <AuthorizeView Policy="@Permissions.Students.Archive">
+
+                                                    <Authorized>
+
+                                                        <TableAction Icon="bi bi-archive" CssClass="action-danger"
+                                                                     OnClick="() => ArchiveStudent(student)">
+
+                                                            Archive
+
+                                                        </TableAction>
+
+                                                    </Authorized>
+
+                                                </AuthorizeView>
+
+                                            </TableActions>
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- Pagination -->
+
+            @if (pagedStudents.TotalCount > 0)
+            {
+                <div class="card-footer">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div class="text-muted">
+
+                            Showing
+
+                            <strong>
+                                @StartItem
+                            </strong>
+
+                            -
+
+                            <strong>
+                                @EndItem
+                            </strong>
+
+                            of
+
+                            <strong>
+                                @pagedStudents.TotalCount
+                            </strong>
+
+                        </div>
+
+
+                        <div class="btn-group">
+
+                            <button type="button" class="btn btn-outline-secondary" disabled="@(request.PageNumber == 1)"
+                                    @onclick="PreviousPage">
+
+                                <i class="bi bi-chevron-left"></i>
+
+                            </button>
+
+
+                            <span class="btn btn-outline-secondary disabled">
+
+                                Page @request.PageNumber
+                                of @pagedStudents.TotalPages
+
+                            </span>
+
+
+                            <button type="button" class="btn btn-outline-secondary"
+                                    disabled="@(request.PageNumber >= pagedStudents.TotalPages)" @onclick="NextPage">
+
+                                <i class="bi bi-chevron-right"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    }
+
+</div>
+
+
+@code {
+
+    private PagedResult<StudentListDto> pagedStudents = new();
+
+    private readonly PagedRequest request = new();
+
+    private bool isLoading;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        StudentService.StudentChanged += Refresh;
+
+        await LoadStudents();
+    }
+
+
+    private async Task LoadStudents()
+    {
+        try
+        {
+            isLoading = true;
+
+            pagedStudents =
+                await StudentService.GetPagedAsync(request);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private async Task OnSearchChanged()
+    {
+        request.PageNumber = 1;
+
+        await LoadStudents();
+    }
+
+
+    private async Task OnPageSizeChanged(int pageSize)
+    {
+        request.PageSize = pageSize;
+        request.PageNumber = 1;
+
+        await LoadStudents();
+    }
+
+
+    private async Task OnSortChanged(string column)
+    {
+        if (request.SortColumn == column)
+        {
+            request.SortDescending =
+                !request.SortDescending;
+        }
+        else
+        {
+            request.SortColumn = column;
+            request.SortDescending = false;
+        }
+
+        request.PageNumber = 1;
+
+        await LoadStudents();
+    }
+
+
+    private async Task PreviousPage()
+    {
+        if (request.PageNumber <= 1)
+            return;
+
+        request.PageNumber--;
+
+        await LoadStudents();
+    }
+
+
+    private async Task NextPage()
+    {
+        if (request.PageNumber >= pagedStudents.TotalPages)
+            return;
+
+        request.PageNumber++;
+
+        await LoadStudents();
+    }
+
+
+    private void Add()
+    {
+        Navigation.NavigateTo("/students/create");
+    }
+
+
+    private void ViewDetails(int id)
+    {
+        Navigation.NavigateTo($"/students/details/{id}");
+    }
+
+
+    private void Edit(int id)
+    {
+        Navigation.NavigateTo($"/students/edit/{id}");
+    }
+
+
+    private void OpenEnrollments(int studentId)
+    {
+        Navigation.NavigateTo(
+            $"/students/{studentId}/enrollments");
+    }
+
+
+    private async Task ArchiveStudent(StudentListDto student)
+    {
+        var confirmed =
+            await DialogService.ConfirmAsync(
+                "Archive Student",
+                $"Are you sure you want to archive {student.FullName}?");
+
+        if (!confirmed)
+            return;
+
+
+        var result =
+            await StudentService.DeleteStudentAsync(student.Id);
+
+
+        if (result.Success)
+        {
+            Notification.Success(
+                "Student archived successfully.");
+
+            await LoadStudents();
+        }
+        else
+        {
+            Notification.Error(result.Message);
+        }
+    }
+
+
+    private string GetStatusClass(StudentStatus status)
+    {
+        return status switch
+        {
+            StudentStatus.Active =>
+                "badge bg-success",
+
+            StudentStatus.Inactive =>
+                "badge bg-secondary",
+
+            StudentStatus.Suspended =>
+                "badge bg-warning text-dark",
+
+            StudentStatus.Graduated =>
+                "badge bg-primary",
+
+            StudentStatus.Withdrawn =>
+                "badge bg-danger",
+
+            _ =>
+                "badge bg-light text-dark"
+        };
+    }
+
+
+    private int StartItem => pagedStudents.TotalCount == 0
+            ? 0
+            : ((request.PageNumber - 1) * request.PageSize) + 1;
+
+
+    private int EndItem =>
+        Math.Min(
+            request.PageNumber * request.PageSize,
+            pagedStudents.TotalCount);
+
+
+    private void Refresh()
+    {
+        _ = InvokeAsync(async () =>
+        {
+            await LoadStudents();
+
+            StateHasChanged();
+        });
+    }
+
+
+    public void Dispose()
+    {
+        StudentService.StudentChanged -= Refresh;
+    }
+
+}

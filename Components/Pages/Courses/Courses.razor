@@ -1,0 +1,458 @@
+@page "/courses"
+
+@using UniversityAdministrationSystem.Components.Shared
+@using UniversityAdministrationSystem.Components.Shared.Layout
+@using UniversityAdministrationSystem.Components.Shared.Lists
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@attribute [Authorize(Policy = Permissions.Courses.View)]
+
+@inject CourseService CourseService
+@inject NavigationManager Navigation
+@inject DialogService DialogService
+
+
+<PageTitle>Courses</PageTitle>
+
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1>Courses</h1>
+
+            <p class="text-muted mb-0">
+                Manage courses offered by the institution.
+            </p>
+
+        </div>
+
+
+        <AuthorizeView Policy="@Permissions.Courses.Create">
+
+            <Authorized>
+
+                <button class="btn btn-primary"
+                        @onclick="CreateCourse">
+
+                    <i class="bi bi-plus-lg me-1"></i>
+
+                    New Course
+
+                </button>
+
+            </Authorized>
+
+        </AuthorizeView>
+
+    </div>
+
+
+    <!-- Error -->
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+
+            <i class="bi bi-exclamation-triangle me-2"></i>
+
+            @errorMessage
+
+        </div>
+    }
+
+
+    <!-- Loading -->
+
+    @if (isLoading)
+    {
+        <div class="card">
+
+            <div class="card-body text-center py-5">
+
+                <div class="spinner-border text-primary"
+                     role="status">
+                </div>
+
+                <p class="text-muted mt-3 mb-0">
+                    Loading courses...
+                </p>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <!-- Course Table -->
+
+        <div class="card">
+
+            <div class="card-header
+                        d-flex justify-content-between
+                        align-items-center">
+
+                <div>
+
+                    <h5 class="mb-0">
+                        Courses
+                    </h5>
+
+                    <small class="text-muted">
+                        @courses.Count() course(s)
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+                @if (!courses.Any())
+                {
+                    <EmptyState Title="No Courses"
+                                Message="There are currently no courses available." />
+                }
+                else
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-hover
+                                      align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+
+                                    <th>
+                                        Code
+                                    </th>
+
+                                    <th>
+                                        Course
+                                    </th>
+
+                                    <th>
+                                        Department
+                                    </th>
+
+                                    <th>
+                                        Teacher
+                                    </th>
+
+                                    <th>
+                                        Credits
+                                    </th>
+
+                                    <th>
+                                        Capacity
+                                    </th>
+
+                                    <th class="text-end">
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @foreach (var item in courses)
+                                {
+                                    <tr>
+
+                                        <!-- Code -->
+
+                                        <td>
+
+                                            <span class="badge bg-secondary">
+                                                @item.CourseCode
+                                            </span>
+
+                                        </td>
+
+
+                                        <!-- Course -->
+
+                                        <td>
+
+                                            <div class="fw-semibold">
+                                                @item.Name
+                                            </div>
+
+                                        </td>
+
+
+                                        <!-- Department -->
+
+                                        <td>
+
+                                            @if (string.IsNullOrWhiteSpace(
+                                                item.DepartmentName))
+                                            {
+                                                <span class="text-muted">
+                                                    Not assigned
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span>
+                                                    @item.DepartmentName
+                                                </span>
+                                            }
+
+                                        </td>
+
+
+                                        <!-- Teacher -->
+
+                                        <td>
+
+                                            @if (string.IsNullOrWhiteSpace(
+                                                item.TeacherName))
+                                            {
+                                                <span class="text-muted">
+
+                                                    <i class="bi bi-person-x me-1"></i>
+
+                                                    Not assigned
+
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span>
+
+                                                    <i class="bi bi-person me-1"></i>
+
+                                                    @item.TeacherName
+
+                                                </span>
+                                            }
+
+                                        </td>
+
+
+                                        <!-- Credits -->
+
+                                        <td>
+                                            @item.CreditHours
+                                        </td>
+
+
+                                        <!-- Capacity -->
+
+                                        <td>
+
+                                            <span class="badge bg-info text-dark">
+
+                                                @item.Capacity
+
+                                            </span>
+
+                                        </td>
+
+
+                                        <!-- Actions -->
+
+                                        <td class="text-end">
+
+                                            <!-- View -->
+
+                                            <button class="btn btn-sm btn-outline-primary"  title="View course"
+                                                    @onclick="() => Details(item.Id)">
+
+                                                <i class="bi bi-eye"></i>
+
+                                            </button>
+
+
+                                            <!-- Edit -->
+
+                                            <AuthorizeView Policy="@Permissions.Courses.Edit">
+
+                                                <Authorized>
+
+                                                    <button class="btn btn-sm btn-outline-secondary ms-1"  title="Edit course"
+                                                            @onclick="() => Edit(item.Id)">
+
+                                                        <i class="bi bi-pencil"></i>
+
+                                                    </button>
+
+                                                </Authorized>
+
+                                            </AuthorizeView>
+
+                                            <!-- Archive -->
+
+                                            <AuthorizeView Policy="@Permissions.Courses.Archive">
+
+                                                <Authorized>
+
+                                                    <button class="btn btn-sm btn-outline-danger ms-1" title="Archive course"
+                                                            @onclick="() => OpenArchiveDialog(item)">
+
+                                                        <i class="bi bi-archive"></i>
+
+                                                    </button>
+
+                                                </Authorized>
+
+                                            </AuthorizeView>
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    }
+
+</div>
+
+
+<ConfirmDialog @ref="confirmDialog"
+               Title="Archive Course"
+               Message="@archiveMessage"
+               OnConfirmed="ArchiveCourse" />
+
+
+@code {
+
+    private IEnumerable<CourseListDto> courses = [];
+
+    private CourseListDto? selectedCourse;
+
+    private ConfirmDialog? confirmDialog;
+
+    private string archiveMessage = "";
+
+    private bool isLoading;
+
+    private bool isArchiving;
+
+    private string? errorMessage;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCoursesAsync();
+    }
+
+
+    private async Task LoadCoursesAsync()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            courses =  await CourseService .GetAllAsync();
+        }
+        catch (Exception)
+        {
+            errorMessage =
+                "Unable to load courses.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private void CreateCourse()
+    {
+        Navigation.NavigateTo(
+            "/courses/create");
+    }
+
+
+    private void Edit(int id)
+    {
+        Navigation.NavigateTo(
+            $"/courses/edit/{id}");
+    }
+
+
+    private void Details(int id)
+    {
+        Navigation.NavigateTo(
+            $"/courses/details/{id}");
+    }
+
+
+    private async Task OpenArchiveDialog(
+        CourseListDto course)
+    {
+        if (isArchiving)
+            return;
+
+        selectedCourse = course;
+
+        archiveMessage =  $"Are you sure you want to archive " +
+            $"'{course.CourseCode} - {course.Name}'?";
+
+
+        if (confirmDialog is not null)
+        {
+            await confirmDialog.ShowAsync();
+        }
+    }
+
+
+    private async Task ArchiveCourse()
+    {
+        if (selectedCourse is null || isArchiving)
+            return;
+
+
+        try
+        {
+            isArchiving = true;
+            errorMessage = null;
+
+
+            var result =    await CourseService.ArchiveAsync(selectedCourse.Id);
+
+
+            if (result.Success)
+            {
+                selectedCourse = null;
+
+                await LoadCoursesAsync();
+            }
+            else
+            {
+                errorMessage = result.Message;
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage =  "Unable to archive the course.";
+        }
+        finally
+        {
+            isArchiving = false;
+        }
+    }
+
+}

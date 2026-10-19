@@ -1,0 +1,354 @@
+@if (isLoading)
+{
+    <div class="text-center py-4">
+
+        <div class="spinner-border"
+             role="status">
+        </div>
+
+        <div class="mt-2">
+            Loading permissions...
+        </div>
+
+    </div>
+}
+else if (permissions.Count == 0)
+{
+    <div class="alert alert-info">
+        No permissions have been defined.
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+            <strong>
+                @SelectedPermissionCount
+            </strong>
+
+            of
+
+            <strong>
+                @permissions.Count
+            </strong>
+
+            permissions selected
+        </div>
+
+        <div>
+
+            <button type="button"
+                    class="btn btn-sm btn-outline-primary me-2"
+                    @onclick="SelectAll">
+
+                Select All
+
+            </button>
+
+            <button type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    @onclick="ClearAll">
+
+                Clear All
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    @foreach (var group in groupedPermissions)
+    {
+        var groupPermissions = group.Value;
+
+        <div class="card mb-3">
+
+            <div class="card-header
+                        d-flex
+                        justify-content-between
+                        align-items-center">
+
+                <div>
+
+                    <strong>
+                        @group.Key
+                    </strong>
+
+                    <span class="text-muted ms-2">
+                        (@groupPermissions.Count)
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <button type="button"
+                            class="btn btn-sm btn-outline-primary me-2"
+                            @onclick="() => SelectGroup(groupPermissions)">
+
+                        Select All
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary"
+                            @onclick="() => ClearGroup(groupPermissions)">
+
+                        Clear
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+                @foreach (var permission in groupPermissions)
+                {
+                    <div class="form-check mb-3">
+
+                        <input class="form-check-input"
+                               type="checkbox"
+                               @bind="permission.IsSelected" />
+
+                        <label class="form-check-label">
+
+                            <strong>
+                                @GetPermissionDisplayName(
+                                    permission.Name)
+                            </strong>
+
+                            @if (!string.IsNullOrWhiteSpace(
+                                permission.Description))
+                            {
+                                <small class="text-muted d-block">
+
+                                    @permission.Description
+
+                                </small>
+                            }
+
+                        </label>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    }
+
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+
+        <div class="text-muted">
+
+            @SelectedPermissionCount
+            permission(s) selected
+
+        </div>
+
+
+        <div>
+
+            <button type="button"
+                    class="btn btn-secondary me-2"
+                    @onclick="Cancel">
+
+                Cancel
+
+            </button>
+
+
+            <button type="button"
+                    class="btn btn-primary"
+                    disabled="@isSaving"
+                    @onclick="Save">
+
+                @if (isSaving)
+                {
+                    <span class="spinner-border
+                                 spinner-border-sm
+                                 me-2">
+                    </span>
+
+                    <span>
+                        Saving...
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        Save Permissions
+                    </span>
+                }
+
+            </button>
+
+        </div>
+
+    </div>
+}
+
+
+@code {
+
+    [Parameter]
+    public string RoleId { get; set; } = string.Empty;
+
+
+    [Parameter]
+    public EventCallback OnSaved { get; set; }
+
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+
+    [Inject]
+    private PermissionAdministrationService PermissionService
+        { get; set; } = default!;
+
+
+    private bool isLoading;
+
+    private bool isSaving;
+
+
+    private List<PermissionDto> permissions = [];
+
+
+    private Dictionary<
+        string,
+        List<PermissionDto>>
+        groupedPermissions = [];
+
+
+    private int SelectedPermissionCount =>
+        permissions.Count(x => x.IsSelected);
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrWhiteSpace(RoleId))
+            return;
+
+        await LoadPermissionsAsync();
+    }
+
+
+    private async Task LoadPermissionsAsync()
+    {
+        isLoading = true;
+
+        try
+        {
+            permissions =
+                await PermissionService
+                    .GetPermissionsForRoleAsync(RoleId);
+
+            groupedPermissions =
+                permissions
+                    .GroupBy(x => x.Group)
+                    .OrderBy(x => x.Key)
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.ToList());
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private void SelectAll()
+    {
+        foreach (var permission in permissions)
+        {
+            permission.IsSelected = true;
+        }
+    }
+
+
+    private void ClearAll()
+    {
+        foreach (var permission in permissions)
+        {
+            permission.IsSelected = false;
+        }
+    }
+
+
+    private static void SelectGroup(
+        List<PermissionDto> group)
+    {
+        foreach (var permission in group)
+        {
+            permission.IsSelected = true;
+        }
+    }
+
+
+    private static void ClearGroup(
+        List<PermissionDto> group)
+    {
+        foreach (var permission in group)
+        {
+            permission.IsSelected = false;
+        }
+    }
+
+
+    private static string GetPermissionDisplayName(
+        string permissionName)
+    {
+        var separatorIndex =
+            permissionName.IndexOf('.');
+
+        if (separatorIndex < 0)
+            return permissionName;
+
+        return permissionName[
+            (separatorIndex + 1)..];
+    }
+
+
+    private async Task Save()
+    {
+        if (isSaving)
+            return;
+
+        isSaving = true;
+
+        try
+        {
+            var selectedPermissionIds =
+                permissions
+                    .Where(x => x.IsSelected)
+                    .Select(x => x.Id)
+                    .ToList();
+
+            await PermissionService.SavePermissionsAsync(
+                RoleId,
+                selectedPermissionIds);
+
+            await OnSaved.InvokeAsync();
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+
+    private async Task Cancel()
+    {
+        await OnCancel.InvokeAsync();
+    }
+}

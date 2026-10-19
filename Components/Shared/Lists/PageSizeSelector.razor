@@ -1,0 +1,33 @@
+<label class="form-label">Show</label>
+
+<select class="form-select"   @onchange="PageSizeChanged">
+
+    @foreach (var size in Sizes)
+    {
+        <option value="@size" selected="@(size == SelectedPageSize)">
+            @size
+        </option>
+    }
+
+</select>
+
+@code {
+
+    [Parameter]
+    public int SelectedPageSize { get; set; } = 5;
+
+    [Parameter]
+    public EventCallback<int> OnChanged { get; set; }
+
+    private readonly int[] Sizes =
+    {
+        5,10,20,30,40,50,60,70,80,90,100
+    };
+
+    private async Task PageSizeChanged(ChangeEventArgs e)
+    {
+        int pageSize = int.Parse(e.Value!.ToString()!);
+
+        await OnChanged.InvokeAsync(pageSize);
+    }
+}

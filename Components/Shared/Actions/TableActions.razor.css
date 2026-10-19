@@ -1,0 +1,112 @@
+.table-actions {
+    position: relative;
+    display: inline-flex;
+    justify-content: flex-end;
+}
+
+
+/* Three-dot trigger */
+
+.table-actions-trigger {
+    width: 34px;
+    height: 34px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border-radius: 0.375rem;
+}
+
+
+/* Dropdown menu */
+
+.table-actions-menu {
+    position: absolute;
+
+    top: calc(100% + 0.35rem);
+    right: 0;
+
+    min-width: 180px;
+
+    padding: 0.35rem;
+
+    background-color: #fff;
+
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+
+    z-index: 1050;
+}
+
+
+/*
+    IMPORTANT:
+    ::deep is required because the buttons
+    come from ChildContent.
+*/
+
+.table-actions-menu ::deep button {
+    display: flex !important;
+
+    width: 100% !important;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    box-sizing: border-box;
+
+    padding: 0.55rem 0.75rem;
+
+    margin: 0;
+
+    border: none;
+
+    background: transparent;
+
+    border-radius: 0.25rem;
+
+    text-align: left;
+
+    font-size: 0.875rem;
+
+    cursor: pointer;
+}
+
+
+/* Normal hover */
+
+.table-actions-menu ::deep button:hover {
+    background-color: #f8f9fa;
+}
+
+
+/* Icons */
+
+.table-actions-menu ::deep button i {
+    width: 1.25rem;
+
+    flex-shrink: 0;
+
+    text-align: center;
+}
+
+
+/* Dangerous actions */
+
+.table-actions-menu ::deep button.action-danger {
+    color: #dc3545 !important;
+}
+
+
+/* Dangerous action hover */
+
+.table-actions-menu ::deep button.action-danger:hover {
+    color: #b02a37 !important;
+
+    background-color: #fff5f5;
+}

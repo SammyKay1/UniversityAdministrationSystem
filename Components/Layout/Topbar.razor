@@ -1,0 +1,264 @@
+@using UniversityAdministrationSystem.Components.Shared.Buttons
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+
+@inject AccountService AccountService
+@inject AuthenticationService AuthenticationService
+@inject NavigationManager Navigation
+@inject AdminLayoutState LayoutState
+@inject IJSRuntime JS
+@implements IDisposable
+@implements IAsyncDisposable
+
+
+<header class="admin-topbar">
+
+    <!-- LEFT -->
+
+    <div class="topbar-left">
+
+        <button class="sidebar-toggle sidebar-toggle-desktop" type="button" @onclick="ToggleSidebar" aria-label="@(LayoutState.IsSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar")" aria-expanded="@LayoutState.IsSidebarCollapsed">
+
+            <i class="bi bi-list"></i>
+
+        </button>
+
+        <button class="sidebar-toggle sidebar-toggle-mobile" type="button" @onclick="ToggleMobileDrawer" aria-label="@(LayoutState.IsMobileDrawerOpen ? "Close navigation menu" : "Open navigation menu")" aria-expanded="@LayoutState.IsMobileDrawerOpen">
+
+            <i class="bi bi-list"></i>
+
+        </button>
+
+
+        <div class="topbar-title">
+
+            University Administration
+
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT -->
+
+    <div class="topbar-right">
+
+        <!-- Notifications -->
+
+        <button class="topbar-icon" type="button" title="Notifications">
+
+            <i class="bi bi-bell"></i>
+
+        </button>
+
+
+        <!-- USER -->
+
+        <div class="topbar-user-wrapper" @ref="userWrapperRef">
+
+            <button type="button" class="topbar-user" @onclick="ToggleUserMenu" aria-haspopup="true" aria-expanded="@showUserMenu" aria-label="User menu">
+
+                <div class="user-avatar">
+
+                    @GetInitials()
+
+                </div>
+
+
+                <div class="user-info">
+
+                    <div class="user-name">
+
+                        @GetDisplayName()
+
+                    </div>
+
+                    <div class="user-role">
+
+                        @GetRole()
+
+                    </div>
+
+                </div>
+
+
+                <i class="bi bi-chevron-down ms-2"></i>
+
+            </button>
+
+
+            @if (showUserMenu)
+            {
+                <div class="topbar-user-menu" @onclick:stopPropagation>
+
+                    <a href="/profile" class="topbar-menu-item" @onclick="CloseUserMenu">
+
+                        <i class="bi bi-person me-2"></i>
+
+                        My Profile
+
+                    </a>
+
+
+                    <a href="/account/change-password" class="topbar-menu-item" @onclick="CloseUserMenu">
+
+                        <i class="bi bi-key me-2"></i>
+
+                        Change Password
+
+                    </a>
+
+
+                    <div class="topbar-menu-divider"></div>
+
+                    <LogoutButton />
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</header>
+
+@code {
+
+    private ApplicationUser? currentUser;
+
+    private IList<string> roles = [];
+
+    private bool showUserMenu;
+
+    private ElementReference userWrapperRef;
+
+    private IJSObjectReference? jsModule;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = await AccountService.GetCurrentUserAsync();
+
+        if (currentUser is not null)
+        {
+            roles = await AccountService.GetCurrentUserRolesAsync();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Layout/Topbar.razor.js");
+            await jsModule.InvokeVoidAsync("initializeOutsideClickHandler", userWrapperRef, DotNetObjectReference.Create(this));
+        }
+    }
+
+
+    private string GetDisplayName()
+    {
+        if (currentUser is null)
+            return "User";
+
+        var fullName = $"{currentUser.FirstName} {currentUser.LastName}".Trim();
+
+        if (!string.IsNullOrWhiteSpace(fullName))
+            return fullName;
+
+        return currentUser.Email ?? "User";
+    }
+
+
+    private string GetInitials()
+    {
+        if (currentUser is null)
+            return "U";
+
+        var firstName = currentUser.FirstName?.Trim();
+
+        var lastName = currentUser.LastName?.Trim();
+
+        if (!string.IsNullOrWhiteSpace(firstName) &&
+            !string.IsNullOrWhiteSpace(lastName))
+        {
+            return $"{firstName[0]}{lastName[0]}".ToUpperInvariant();
+        }
+
+        if (!string.IsNullOrWhiteSpace(firstName))
+            return firstName[0].ToString().ToUpperInvariant();
+
+        if (!string.IsNullOrWhiteSpace(currentUser.Email))
+            return currentUser.Email[0].ToString().ToUpperInvariant();
+
+        return "U";
+    }
+
+
+    private string GetRole()
+    {
+        if (roles.Count == 0)
+            return "User";
+
+        return roles.First();
+    }
+
+
+    private void ToggleUserMenu()
+    {
+        showUserMenu = !showUserMenu;
+    }
+
+
+    private void CloseUserMenu()
+    {
+        showUserMenu = false;
+    }
+
+
+    private void ToggleSidebar()
+    {
+        LayoutState.ToggleSidebar();
+    }
+
+
+    private void ToggleMobileDrawer()
+    {
+        LayoutState.ToggleMobileDrawer();
+    }
+
+
+    [JSInvokable]
+    public void OnOutsideClick()
+    {
+        if (showUserMenu)
+        {
+            showUserMenu = false;
+        }
+    }
+
+
+    private async Task LogoutAsync()
+    {
+        showUserMenu = false;
+
+        await AuthenticationService.LogoutAsync();
+
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+
+
+    public void Dispose()
+    {
+    }
+
+
+    public async ValueTask DisposeAsync()
+    {
+        if (jsModule is not null)
+        {
+            await jsModule.InvokeVoidAsync("disposeOutsideClickHandler");
+            await jsModule.DisposeAsync();
+        }
+    }
+
+}

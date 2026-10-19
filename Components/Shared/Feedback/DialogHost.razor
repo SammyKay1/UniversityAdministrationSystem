@@ -1,0 +1,106 @@
+@inject DialogService DialogService
+
+@implements IDisposable
+
+@if (show)
+{
+    <div class="modal fade show d-block"
+         tabindex="-1"
+         role="dialog"
+         aria-modal="true"
+         style="background-color: rgba(0,0,0,.5);">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        @DialogService.Title
+                    </h5>
+
+                </div>
+
+
+                <div class="modal-body">
+
+                    @DialogService.Message
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            @onclick="Cancel">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button type="button"
+                            class="btn btn-danger"
+                            @onclick="Confirm">
+
+                        Confirm
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
+@code {
+
+    private bool show;
+
+
+    protected override void OnInitialized()
+    {
+        DialogService.OnShow += Show;
+    }
+
+
+    private void Show()
+    {
+        show = true;
+
+        InvokeAsync(StateHasChanged);
+    }
+
+
+    private void Confirm()
+    {
+        show = false;
+
+        DialogService.Confirm();
+
+        StateHasChanged();
+    }
+
+
+    private void Cancel()
+    {
+        show = false;
+
+        DialogService.Cancel();
+
+        StateHasChanged();
+    }
+
+
+    public void Dispose()
+    {
+        DialogService.OnShow -= Show;
+    }
+
+}

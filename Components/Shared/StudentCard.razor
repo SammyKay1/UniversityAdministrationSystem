@@ -1,0 +1,51 @@
+
+
+@inject NavigationManager Navigation
+
+<div class="card p-3 mb-3">
+    <p>Id: @Id</p>
+
+    <p>Name: @Name</p>
+
+    <p>Course: @Course</p>
+
+    <p>Age: @Age</p>
+
+    
+    <button class="btn btn-primary mb-3" type="submit" @onclick="Navigate">View Details</button>
+    <button class="btn btn-danger"  @onclick="Delete">Delete</button>
+    
+</div>
+
+
+
+@code{
+    public int count = 0;
+    [Parameter]
+    public int Id{get;set;}
+
+    [Parameter]
+    public string Name { get; set; } = "";
+
+    [Parameter]
+    public string Course { get; set; } = "";
+
+    [Parameter]
+    public int Age { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnDelete { get; set; }
+
+
+    
+
+    public void Navigate(){
+        
+        Navigation.NavigateTo($"/student/{Id}");
+    }
+
+    async Task Delete(){
+        await OnDelete.InvokeAsync(Id);
+    }
+
+}

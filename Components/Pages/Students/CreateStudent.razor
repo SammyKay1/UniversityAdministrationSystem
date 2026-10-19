@@ -1,0 +1,537 @@
+@page "/students/create"
+
+@using UniversityAdministrationSystem.Components.Shared
+@using UniversityAdministrationSystem.Components.Shared.Feedback
+@using Microsoft.AspNetCore.Authorization
+
+@inject StudentService StudentService
+@inject NavigationManager Navigation
+@inject NotificationService Notification
+@inject LoadingService Loading
+
+@attribute [Authorize(Policy = Permissions.Students.Create)]
+
+
+<PageTitle>Create Student</PageTitle>
+
+<NotificationContainer />
+
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-start mb-4">
+
+        <div>
+
+            <div class="text-muted small mb-1">
+
+                <button type="button"
+                        class="btn btn-link p-0 text-decoration-none"
+                        @onclick="GoBack">
+
+                    Students
+
+                </button>
+
+                <span class="mx-2">
+                    /
+                </span>
+
+                Create Student
+
+            </div>
+
+
+            <h1 class="mb-1">
+                Create Student
+            </h1>
+
+            <p class="text-muted mb-0">
+                Add a new student to the university records.
+            </p>
+
+        </div>
+
+
+        <button type="button"
+                class="btn btn-outline-secondary"
+                @onclick="GoBack">
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            Back
+
+        </button>
+
+    </div>
+
+
+    <EditForm Model="student"
+              FormName="CreateStudentForm"
+              OnValidSubmit="CreateNewStudent">
+
+        <DataAnnotationsValidator />
+
+
+        <!-- Validation Summary -->
+
+        <ValidationSummary class="alert alert-warning" />
+
+
+        <div class="row g-4">
+
+            <!-- Personal Information -->
+
+            <div class="col-12">
+
+                <div class="card">
+
+                    <div class="card-header bg-white">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="student-create-section-icon">
+
+                                <i class="bi bi-person-vcard"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <h5 class="mb-1">
+                                    Personal Information
+                                </h5>
+
+                                <p class="text-muted small mb-0">
+                                    Enter the student's basic personal information.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-4">
+
+                            <!-- First Name -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+
+                                    First Name
+
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+
+                                <InputText class="form-control"
+                                           placeholder="Enter first name"
+                                           @bind-Value="student.FirstName" />
+
+
+                                <ValidationMessage
+                                    For="@(() => student.FirstName)" />
+
+                            </div>
+
+
+                            <!-- Last Name -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+
+                                    Last Name
+
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+
+                                <InputText class="form-control"
+                                           placeholder="Enter last name"
+                                           @bind-Value="student.LastName" />
+
+
+                                <ValidationMessage
+                                    For="@(() => student.LastName)" />
+
+                            </div>
+
+
+                            <!-- Email -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+
+                                    Email
+
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+
+                                <InputText type="email"
+                                           class="form-control"
+                                           placeholder="student@example.com"
+                                           @bind-Value="student.Email" />
+
+
+                                <ValidationMessage
+                                    For="@(() => student.Email)" />
+
+                            </div>
+
+
+                            <!-- Date of Birth -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+
+                                    Date of Birth
+
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+
+                                <InputDate class="form-control"
+                                           @bind-Value="student.DateOfBirth" />
+
+
+                                <ValidationMessage
+                                    For="@(() => student.DateOfBirth)" />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Academic Information -->
+
+            <div class="col-12">
+
+                <div class="card">
+
+                    <div class="card-header bg-white">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="student-create-section-icon">
+
+                                <i class="bi bi-mortarboard"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <h5 class="mb-1">
+                                    Academic Information
+                                </h5>
+
+                                <p class="text-muted small mb-0">
+                                    Assign the student to an academic department.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+
+                                    Department
+
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+
+                                <InputSelect class="form-select"
+                                             @bind-Value="student.DepartmentId">
+
+                                    <option value="0">
+                                        Select department
+                                    </option>
+
+
+                                    @foreach (var department in departments)
+                                    {
+                                        <option value="@department.Id">
+                                            @department.Name
+                                        </option>
+                                    }
+
+                                </InputSelect>
+
+
+                                <ValidationMessage
+                                    For="@(() => student.DepartmentId)" />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Address -->
+
+            <div class="col-12">
+
+                <div class="card">
+
+                    <div class="card-header bg-white">
+
+                        <div class="d-flex align-items-center">
+
+                            <div class="student-create-section-icon">
+
+                                <i class="bi bi-geo-alt"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <h5 class="mb-1">
+                                    Address
+                                </h5>
+
+                                <p class="text-muted small mb-0">
+                                    Enter the student's residential or contact address.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="row g-4">
+
+                            <!-- Address Line 1 -->
+
+                            <div class="col-12">
+
+                                <label class="form-label">
+                                    Address Line 1
+                                </label>
+
+
+                                <InputText class="form-control"
+                                           placeholder="Enter address line 1"
+                                           @bind-Value="student.Address.AddressLine1" />
+
+                            </div>
+
+
+                            <!-- Address Line 2 -->
+
+                            <div class="col-12">
+
+                                <label class="form-label">
+                                    Address Line 2
+                                </label>
+
+
+                                <InputText class="form-control"
+                                           placeholder="Enter address line 2"
+                                           @bind-Value="student.Address.AddressLine2" />
+
+                            </div>
+
+
+                            <!-- City -->
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">
+                                    City
+                                </label>
+
+
+                                <InputText class="form-control"
+                                           placeholder="City"
+                                           @bind-Value="student.Address.City" />
+
+                            </div>
+
+
+                            <!-- State -->
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">
+                                    State / Region
+                                </label>
+
+
+                                <InputText class="form-control"
+                                           placeholder="State / Region"
+                                           @bind-Value="student.Address.State" />
+
+                            </div>
+
+
+                            <!-- Country -->
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">
+                                    Country
+                                </label>
+
+
+                                <InputText class="form-control"
+                                           placeholder="Country"
+                                           @bind-Value="student.Address.Country" />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Form Actions -->
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+
+            <div class="text-muted small">
+
+                <i class="bi bi-info-circle me-1"></i>
+
+                Fields marked with
+                <span class="text-danger">*</span>
+                are required.
+
+            </div>
+
+
+            <div class="d-flex gap-2">
+
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        @onclick="GoBack">
+
+                    Cancel
+
+                </button>
+
+
+                <button type="submit"
+                        class="btn btn-primary">
+
+                    <i class="bi bi-person-plus me-1"></i>
+
+                    Create Student
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </EditForm>
+
+</div>
+
+
+
+@code {
+
+    private StudentCreateDto student = new();
+
+    private IEnumerable<DepartmentLookUpDto> departments = [];
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        departments =
+            await StudentService
+                .GetDepartmentsAsync();
+    }
+
+
+    private async Task CreateNewStudent()
+    {
+        Loading.Show();
+
+        try
+        {
+            var result =
+                await StudentService
+                    .CreateStudentAsync(student);
+
+
+            if (result.Success)
+            {
+                Notification.Success(
+                    "Student created successfully.");
+
+                Navigation.NavigateTo("/students");
+            }
+            else
+            {
+                Notification.Error(
+                    result.Message);
+            }
+        }
+        catch (Exception)
+        {
+            Notification.Error(
+                "Unable to create the student.");
+        }
+        finally
+        {
+            Loading.Hide();
+        }
+    }
+
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/students");
+    }
+
+}

@@ -1,0 +1,64 @@
+
+@page "/student-form"
+@rendermode InteractiveServer
+
+@inject NavigationManager Navigation
+@inject StudentService StudentService
+
+<h2>Student Registration</h2>
+
+<EditForm Model="student" OnValidSubmit="SaveStudent">
+    <DataAnnotationsValidator />
+    
+
+    <div>
+        <label for="Name">Name:</label>
+        <InputText class="form-control" @bind-Value="student.FirstName"></InputText>
+        <ValidationMessage For="@(() => student.FirstName)" />
+    </div>
+   
+
+    <div>
+        <label for="Course">Course:</label>
+        <InputText class="form-control" @bind-Value="student.LastName"></InputText>
+        <ValidationMessage For="@(() => student.LastName)" />
+    </div>
+    
+
+    <div>
+        <button class="btn btn-primary" type="submit">Save Student</button>
+        <button class="btn btn-danger" @onclick="CancelStudent">Cancel</button>
+    </div>
+
+
+ 
+</EditForm>
+
+<hr />
+<p>@message</p>
+
+<h2>Live Preview</h2>
+
+<p>Student Id: @student.Id</p>
+<p>Name: @student.FirstName</p>
+<p>Course: @student.LastName</p>
+<p>Age: @student.Status</p>
+
+
+@code{
+    Student student = new Student();
+
+    string message = "";
+    void SaveStudent(){
+
+        StudentService.AddStudent(student);
+
+        Navigation.NavigateTo("/students");
+        
+    }
+
+    void CancelStudent(){
+    
+    }
+}
+

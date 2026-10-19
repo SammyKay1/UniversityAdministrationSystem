@@ -1,0 +1,297 @@
+
+@page "/administration/users/create"
+
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Policy = Permissions.Users.Create)]
+
+@inject UserAdministrationService UserAdministrationService
+@inject NavigationManager Navigation
+
+<PageTitle>Create User</PageTitle>
+
+
+<div class="mb-4">
+
+    <h1>Create User</h1>
+
+    <p class="text-muted">
+        Create a new application user.
+    </p>
+
+</div>
+
+
+<EditForm Model="@model"
+          OnValidSubmit="CreateUserAsync"
+          FormName="create-user">
+
+    <DataAnnotationsValidator />
+
+    <ValidationSummary />
+
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <h5 class="card-title mb-4">
+                User Information
+            </h5>
+
+
+            <div class="row">
+
+
+                <!-- FIRST NAME -->
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        First Name
+                    </label>
+
+                    <InputText
+                        class="form-control"
+                        @bind-Value="model.FirstName" />
+
+                    <ValidationMessage
+                        For="@(() => model.FirstName)" />
+
+                </div>
+
+
+                <!-- LAST NAME -->
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Last Name
+                    </label>
+
+                    <InputText
+                        class="form-control"
+                        @bind-Value="model.LastName" />
+
+                    <ValidationMessage
+                        For="@(() => model.LastName)" />
+
+                </div>
+
+
+                <!-- USERNAME -->
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Username
+                    </label>
+
+                    <InputText
+                        class="form-control"
+                        @bind-Value="model.UserName" />
+
+                    <ValidationMessage
+                        For="@(() => model.UserName)" />
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Email
+                    </label>
+
+                    <InputText
+                        type="email"
+                        class="form-control"
+                        @bind-Value="model.Email" />
+
+                    <ValidationMessage
+                        For="@(() => model.Email)" />
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Password
+                    </label>
+
+                    <InputText
+                        type="password"
+                        class="form-control"
+                        @bind-Value="model.Password" />
+
+                    <ValidationMessage
+                        For="@(() => model.Password)" />
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Confirm Password
+                    </label>
+
+                    <InputText
+                        type="password"
+                        class="form-control"
+                        @bind-Value="model.ConfirmPassword" />
+
+                    <ValidationMessage
+                        For="@(() => model.ConfirmPassword)" />
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label">
+                        Initial Role
+                    </label>
+
+                    <InputSelect
+                        class="form-select"
+                        @bind-Value="model.Role">
+
+                        <option value="">
+                            -- No Role --
+                        </option>
+
+                        @foreach (var role in roles)
+                        {
+                            <option value="@role">
+                                @role
+                            </option>
+                        }
+
+                    </InputSelect>
+
+                </div>
+
+            </div>
+
+
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="alert alert-danger mt-3">
+                    @errorMessage
+                </div>
+            }
+
+
+        </div>
+
+
+        <div class="card-footer d-flex justify-content-end gap-2">
+
+            <button type="button"
+                    class="btn btn-secondary"
+                    @onclick="Cancel">
+
+                Cancel
+
+            </button>
+
+
+            <button type="submit"
+                    class="btn btn-primary"
+                    disabled="@isSaving">
+
+                @if (isSaving)
+                {
+                    <span class="spinner-border spinner-border-sm me-2">
+                    </span>
+
+                    <span>
+                        Creating...
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        Create User
+                    </span>
+                }
+
+            </button>
+
+        </div>
+
+    </div>
+
+</EditForm>
+
+
+@code {
+
+    private CreateUserDto model = new();
+
+    private List<string> roles = [];
+
+    private bool isSaving;
+
+    private string? errorMessage;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        roles =
+            await UserAdministrationService
+                .GetRolesAsync();
+    }
+
+
+    private async Task CreateUserAsync()
+    {
+        isSaving = true;
+
+        errorMessage = null;
+
+        try
+        {
+            var result =
+                await UserAdministrationService
+                    .CreateUserAsync(model);
+
+
+            if (result.Succeeded)
+            {
+                Navigation.NavigateTo(
+                    "/administration/users");
+                
+                return;
+            }
+
+
+            errorMessage =
+                string.Join(
+                    " ",
+                    result.Errors.Select(
+                        x => x.Description));
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo(
+            "/administration/users");
+    }
+}

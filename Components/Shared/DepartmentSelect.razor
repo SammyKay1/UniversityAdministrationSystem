@@ -1,0 +1,47 @@
+@using Microsoft.AspNetCore.Components.Forms
+
+<InputSelect class="form-select"
+             @bind-Value="Value"
+             @bind-Value:after="ValueChangedAfter">
+
+    <option value="0">
+        Select department
+    </option>
+
+    @foreach (var department in Departments)
+    {
+        <option value="@department.Id">
+            @department.Name
+        </option>
+    }
+
+</InputSelect>
+
+
+@code {
+
+    [Parameter]
+    public IEnumerable<DepartmentLookUpDto> Departments { get; set; }
+        = Enumerable.Empty<DepartmentLookUpDto>();
+
+
+    [Parameter]
+    public int Value { get; set; }
+
+
+    [Parameter]
+    public EventCallback<int> ValueChanged { get; set; }
+
+
+    [Parameter]
+    public EventCallback<int> OnChanged { get; set; }
+
+
+    private async Task ValueChangedAfter()
+    {
+        await ValueChanged.InvokeAsync(Value);
+
+        await OnChanged.InvokeAsync(Value);
+    }
+
+}

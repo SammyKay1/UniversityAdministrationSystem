@@ -1,0 +1,645 @@
+@page "/administration/teachers/{Id:int}"
+
+@using UniversityAdministrationSystem.Components.Shared
+@using UniversityAdministrationSystem.Components.Shared.Feedback
+@using UniversityAdministrationSystem.Components.Shared.Layout
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@attribute [Authorize(Policy = Permissions.Teachers.View)]
+
+@inject TeacherService TeacherService
+@inject NavigationManager Navigation
+@inject NotificationService Notification
+
+
+<PageTitle>Teacher Details</PageTitle>
+
+<NotificationContainer />
+
+
+@if (isLoading)
+{
+    <!-- Loading -->
+
+    <div class="card">
+
+        <div class="card-body text-center py-5">
+
+            <div class="spinner-border text-primary"
+                 role="status">
+            </div>
+
+            <p class="text-muted mt-3 mb-0">
+                Loading teacher information...
+            </p>
+
+        </div>
+
+    </div>
+}
+else if (teacher is null)
+{
+    <!-- Not Found -->
+
+    <PageHeader Title="Teacher Details">
+
+        <button class="btn btn-outline-secondary"
+                @onclick="GoBack">
+
+            <i class="bi bi-arrow-left me-1"></i>
+            Back
+
+        </button>
+
+    </PageHeader>
+
+
+    <PageCard>
+
+        <div class="text-center py-5">
+
+            <i class="bi bi-person-x fs-1 text-muted"></i>
+
+            <h5 class="mt-3">
+                Teacher not found
+            </h5>
+
+            <p class="text-muted">
+                The requested teacher record could not be found.
+            </p>
+
+            <button class="btn btn-primary"
+                    @onclick="GoBack">
+
+                <i class="bi bi-arrow-left me-1"></i>
+                Back to Teachers
+
+            </button>
+
+        </div>
+
+    </PageCard>
+}
+else
+{
+    <!-- ===================================================== -->
+    <!-- PAGE HEADER -->
+    <!-- ===================================================== -->
+
+    <PageHeader Title="Teacher Details" SubTitle="View and Manage Teacher Information">
+
+        <div class="d-flex gap-2 ">
+
+            <button class="btn btn-outline-secondary"   @onclick="GoBack">
+
+                <i class="bi bi-arrow-left me-1"></i>
+                Back
+
+            </button>
+
+
+            <AuthorizeView Policy="@Permissions.Teachers.Edit">
+
+                <Authorized>
+
+                    <button class="btn btn-primary"
+                            @onclick="EditTeacher">
+
+                        <i class="bi bi-pencil me-1"></i>
+                        Edit Teacher
+
+                    </button>
+
+                </Authorized>
+
+            </AuthorizeView>
+
+        </div>
+
+    </PageHeader>
+
+
+    <!-- ===================================================== -->
+    <!-- TEACHER PROFILE -->
+    <!-- ===================================================== -->
+
+    <PageCard>
+
+        <div class="row align-items-center">
+
+            <!-- Avatar -->
+
+            <div class="col-md-2 text-center">
+
+                <div class="rounded-circle bg-primary-subtle
+                            text-primary d-flex align-items-center
+                            justify-content-center mx-auto fw-semibold"
+                     style="width: 90px;
+                            height: 90px;
+                            font-size: 2rem;">
+
+                    @GetInitials()
+
+                </div>
+
+            </div>
+
+
+            <!-- Teacher Information -->
+
+            <div class="col-md-10">
+
+                <h3 class="fw-bold mb-1">
+                    @teacher.FirstName @teacher.LastName
+                </h3>
+
+                <p class="text-muted mb-2">
+
+                    <i class="bi bi-envelope me-1"></i>
+
+                    <a href="mailto:@teacher.Email"
+                       class="text-decoration-none">
+
+                        @teacher.Email
+
+                    </a>
+
+                </p>
+
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    <span class="badge
+                                 bg-secondary-subtle
+                                 text-secondary">
+
+                        <i class="bi bi-building me-1"></i>
+
+                        @teacher.DepartmentName
+
+                    </span>
+
+
+                    <span class="badge
+                                 bg-primary-subtle
+                                 text-primary">
+
+                        <i class="bi bi-person-badge me-1"></i>
+
+                        Teacher
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </PageCard>
+
+
+    <!-- ===================================================== -->
+    <!-- INFORMATION -->
+    <!-- ===================================================== -->
+
+    <div class="row g-4 mt-1">
+
+        <!-- Personal Information -->
+
+        <div class="col-lg-5">
+
+            <PageCard>
+
+                <h5 class="fw-semibold mb-4">
+
+                    <i class="bi bi-person-vcard me-2"></i>
+
+                    Personal Information
+
+                </h5>
+
+
+                <div class="mb-3">
+
+                    <label class="text-muted small">
+                        First Name
+                    </label>
+
+                    <div class="fw-semibold">
+                        @teacher.FirstName
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="text-muted small">
+                        Last Name
+                    </label>
+
+                    <div class="fw-semibold">
+                        @teacher.LastName
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="text-muted small">
+                        Email
+                    </label>
+
+                    <div class="fw-semibold">
+
+                        <a href="mailto:@teacher.Email"
+                           class="text-decoration-none">
+
+                            @teacher.Email
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="text-muted small">
+                        Date of Birth
+                    </label>
+
+                    <div class="fw-semibold">
+
+                        @teacher.DateOfBirth.ToString("dd MMMM yyyy")
+
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <label class="text-muted small">
+                        Department
+                    </label>
+
+                    <div class="mt-1">
+
+                        <span class="badge
+                                     bg-secondary-subtle
+                                     text-secondary">
+
+                            @teacher.DepartmentName
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </PageCard>
+
+        </div>
+
+
+        <!-- Course Summary -->
+
+        <div class="col-lg-7">
+
+            <PageCard>
+
+                <div class="d-flex justify-content-between
+                            align-items-center mb-4">
+
+                    <div>
+
+                        <h5 class="fw-semibold mb-1">
+
+                            <i class="bi bi-book me-2"></i>
+
+                            Assigned Courses
+
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Courses currently assigned to this teacher.
+                        </p>
+
+                    </div>
+
+
+                    <span class="badge
+                                 bg-primary-subtle
+                                 text-primary fs-6">
+
+                        @teacher.CourseCount
+
+                    </span>
+
+                </div>
+
+
+                @if (teacher.Courses.Count == 0)
+                {
+                    <!-- Empty Courses -->
+
+                    <div class="text-center py-5">
+
+                        <i class="bi bi-journal-x
+                                  fs-1 text-muted">
+                        </i>
+
+                        <h6 class="mt-3">
+                            No assigned courses
+                        </h6>
+
+                        <p class="text-muted mb-0">
+                            This teacher has no courses assigned yet.
+                        </p>
+
+                    </div>
+                }
+                else
+                {
+                    <!-- Course Table -->
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover
+                                      align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+
+                                    <th>
+                                        Course
+                                    </th>
+
+                                    <th>
+                                        Credits
+                                    </th>
+
+                                    <th>
+                                        Capacity
+                                    </th>
+
+                                    <th>
+                                        Enrolled
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @foreach (var course in teacher.Courses)
+                                {
+                                    <tr>
+
+                                        <!-- Course -->
+
+                                        <td>
+
+                                            <div class="fw-semibold">
+                                                @course.CourseCode
+                                            </div>
+
+                                            <div class="small text-muted">
+                                                @course.Name
+                                            </div>
+
+                                        </td>
+
+
+                                        <!-- Credits -->
+
+                                        <td>
+                                            @course.CreditHours
+                                        </td>
+
+
+                                        <!-- Capacity -->
+
+                                        <td>
+                                            @course.Capacity
+                                        </td>
+
+
+                                        <!-- Enrollment -->
+
+                                        <td>
+
+                                            @if (course.Capacity <= 0)
+                                            {
+                                                <span class="badge
+                                                             bg-secondary-subtle
+                                                             text-secondary">
+
+                                                    No capacity
+
+                                                </span>
+                                            }
+                                            else if (course.EnrollmentCount
+                                                     >= course.Capacity)
+                                            {
+                                                <span class="badge
+                                                             bg-danger-subtle
+                                                             text-danger">
+
+                                                    @course.EnrollmentCount
+                                                    / @course.Capacity
+                                                    Full
+
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge
+                                                             bg-success-subtle
+                                                             text-success">
+
+                                                    @course.EnrollmentCount
+                                                    / @course.Capacity
+
+                                                </span>
+                                            }
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+
+            </PageCard>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- TEACHING SUMMARY -->
+    <!-- ===================================================== -->
+
+    <div class="mt-4">
+
+        <PageCard>
+
+            <h5 class="fw-semibold mb-4">
+
+                <i class="bi bi-mortarboard me-2"></i>
+
+                Teaching Summary
+
+            </h5>
+
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+
+                    <div class="text-muted small">
+                        Department
+                    </div>
+
+                    <div class="fw-semibold mt-1">
+                        @teacher.DepartmentName
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="text-muted small">
+                        Assigned Courses
+                    </div>
+
+                    <div class="fw-semibold mt-1">
+                        @teacher.CourseCount
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="text-muted small">
+                        Total Capacity
+                    </div>
+
+                    <div class="fw-semibold mt-1">
+                        @teacher.Courses.Sum(c => c.Capacity)
+                    </div>
+
+                </div>
+
+            </div>
+
+        </PageCard>
+
+    </div>
+
+}
+
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+
+    private TeacherDto? teacher;
+
+    private bool isLoading = true;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadTeacherAsync();
+    }
+
+
+    private async Task LoadTeacherAsync()
+    {
+        try
+        {
+            isLoading = true;
+
+            teacher =
+                await TeacherService
+                    .GetByIdAsync(Id);
+
+
+            if (teacher is null)
+            {
+                Notification.Error(
+                    "Teacher could not be found.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+            teacher = null;
+
+            Notification.Error(
+                "Unable to load teacher information.");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+
+    private string GetInitials()
+    {
+        if (teacher is null)
+            return "";
+
+
+        var first =
+            string.IsNullOrWhiteSpace(teacher.FirstName)
+                ? ""
+                : teacher.FirstName[0].ToString();
+
+
+        var last =
+            string.IsNullOrWhiteSpace(teacher.LastName)
+                ? ""
+                : teacher.LastName[0].ToString();
+
+
+        return $"{first}{last}".ToUpper();
+    }
+
+
+    private void EditTeacher()
+    {
+        Navigation.NavigateTo(
+            $"/administration/teachers/edit/{Id}");
+    }
+
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo(
+            "/administration/teachers");
+    }
+
+}

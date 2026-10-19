@@ -1,0 +1,288 @@
+
+@page "/administration/teachers/create"
+
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Policy = Permissions.Teachers.Create)]
+
+@inject TeacherService TeacherService
+@inject DepartmentService DepartmentService
+@inject NavigationManager Navigation
+
+<PageTitle>Create Teacher</PageTitle>
+
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1>Create Teacher</h1>
+
+            <p class="text-muted mb-0">
+                Add a new teacher to the system.
+            </p>
+
+        </div>
+
+
+        <button class="btn btn-secondary"
+                @onclick="Cancel">
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            Back
+
+        </button>
+
+    </div>
+
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">
+
+            @errorMessage
+
+        </div>
+    }
+
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Teacher Information
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <EditForm Model="model"
+                      OnValidSubmit="SaveTeacher">
+
+                <DataAnnotationsValidator />
+
+                <ValidationSummary />
+
+
+                <div class="row g-4">
+
+                    <!-- First Name -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            First Name
+                        </label>
+
+                        <InputText class="form-control"
+                                   @bind-Value="model.FirstName" />
+
+                        <ValidationMessage
+                            For="@(() => model.FirstName)" />
+
+                    </div>
+
+
+                    <!-- Last Name -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Last Name
+                        </label>
+
+                        <InputText class="form-control"
+                                   @bind-Value="model.LastName" />
+
+                        <ValidationMessage
+                            For="@(() => model.LastName)" />
+
+                    </div>
+
+
+                    <!-- Email -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <InputText type="email"
+                                   class="form-control"
+                                   @bind-Value="model.Email" />
+
+                        <ValidationMessage
+                            For="@(() => model.Email)" />
+
+                    </div>
+
+
+                    <!-- Date of Birth -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Date of Birth
+                        </label>
+
+                        <InputDate class="form-control"
+                                   @bind-Value="model.DateOfBirth" />
+
+                        <ValidationMessage
+                            For="@(() => model.DateOfBirth)" />
+
+                    </div>
+
+
+                    <!-- Department -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Department
+                        </label>
+
+                        <InputSelect class="form-select"
+                                     @bind-Value="model.DepartmentId">
+
+                            <option value="0">
+                                Select department
+                            </option>
+
+                            @foreach (var department in departments)
+                            {
+                                <option value="@department.Id">
+                                    @department.Name
+                                </option>
+                            }
+
+                        </InputSelect>
+
+                        <ValidationMessage
+                            For="@(() => model.DepartmentId)" />
+
+                    </div>
+
+                </div>
+
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            @onclick="Cancel">
+
+                        Cancel
+ 
+                    </button>
+
+
+                    <button type="submit"
+                            class="btn btn-primary"
+                            disabled="@isSaving">
+
+                        @if (isSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1">
+                            </span>
+
+                            <span>Saving...</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-check-lg me-1"></i>
+
+                            <span>Save Teacher</span>
+                        }
+
+                    </button>
+
+                </div>
+
+            </EditForm>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    private TeacherDto model = new();
+
+    private IEnumerable<DepartmentLookUpDto>
+        departments = Enumerable.Empty<DepartmentLookUpDto>();
+
+
+    private bool isSaving;
+
+    private string? errorMessage;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        departments =
+            await DepartmentService
+                .GetDepartmentsAsync();
+    }
+
+
+    private async Task SaveTeacher()
+    {
+        try
+        {
+            isSaving = true;
+
+            errorMessage = null;
+
+
+            if (model.DepartmentId <= 0)
+            {
+                errorMessage =
+                    "Please select a department.";
+
+                return;
+            }
+
+
+            await TeacherService
+                .CreateAsync(model);
+
+
+            Navigation.NavigateTo(
+                "/administration/teachers");
+        }
+        catch (InvalidOperationException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (Exception)
+        {
+            errorMessage =
+                "Unable to create the teacher.";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo(
+            "/administration/teachers");
+    }
+
+}

@@ -1,0 +1,240 @@
+@page "/courses/create"
+
+@using UniversityAdministrationSystem.Components.Shared.Forms
+@using UniversityAdministrationSystem.Components.Shared.Feedback
+@using UniversityAdministrationSystem.Components.Shared.Layout
+@using UniversityAdministrationSystem.Components.Shared
+
+@inject CourseService CourseService
+@inject DepartmentService DepartmentService
+@inject TeacherService TeacherService
+@inject NotificationService Notification
+@inject NavigationManager Navigation
+
+@attribute [Authorize(Policy = Permissions.Courses.Create)]
+
+
+<NotificationContainer />
+
+<PageHeader Title="Create Course" />
+
+
+<PageCard>
+
+    <EditForm Model="course"
+              OnValidSubmit="Save"
+              FormName="CreateCourse">
+
+        <DataAnnotationsValidator />
+
+        <ValidationSummary />
+
+
+        <!-- Course Code -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Course Code
+            </label>
+
+            <InputText class="form-control"
+                       @bind-Value="course.CourseCode" />
+
+        </div>
+
+
+        <!-- Course Name -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Name
+            </label>
+
+            <InputText class="form-control"
+                       @bind-Value="course.Name" />
+
+        </div>
+
+
+        <!-- Description -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Description
+            </label>
+
+            <InputTextArea class="form-control"
+                           @bind-Value="course.Description" />
+
+        </div>
+
+
+        <!-- Credit Hours / Capacity -->
+
+        <div class="row">
+
+            <div class="col">
+
+                <label class="form-label">
+                    Credit Hours
+                </label>
+
+                <InputNumber class="form-control"
+                             @bind-Value="course.CreditHours" />
+
+            </div>
+
+
+            <div class="col">
+
+                <label class="form-label">
+                    Capacity
+                </label>
+
+                <InputNumber class="form-control"
+                             @bind-Value="course.Capacity" />
+
+            </div>
+
+        </div>
+
+
+        <!-- Department -->
+
+        <div class="mt-3">
+
+            <label class="form-label">
+                Department
+            </label>
+
+            <DepartmentSelect Departments="departments"
+                             @bind-value="course.DepartmentId"
+                             OnChanged="DepartmentChanged" />
+
+        </div>
+
+
+        <!-- Teacher -->
+
+        <div class="mt-3">
+
+            <label class="form-label">
+                Teacher
+            </label>
+
+
+            <InputSelect class="form-select"
+                         @bind-Value="course.TeacherId">
+
+                <option value="">
+                    No teacher assigned
+                </option>
+
+                @foreach (var teacher in teachers)
+                {
+                    <option value="@teacher.Id">
+                        @teacher.FullName
+                    </option>
+                }
+
+            </InputSelect>
+
+
+            <div class="form-text">
+                Only teachers belonging to the selected
+                department are shown.
+            </div>
+
+        </div>
+
+
+        <!-- Buttons -->
+
+        <SaveCancelButtons OnCancel="GoBack" />
+
+    </EditForm>
+
+</PageCard>
+
+
+
+@code {
+
+    private CourseCreateDto course = new();
+
+
+    private IEnumerable<TeacherLookupDto> teachers =
+        Enumerable.Empty<TeacherLookupDto>();
+
+
+    private IEnumerable<DepartmentLookUpDto> departments = [];
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        departments =
+            await DepartmentService
+                .GetDepartmentsAsync();
+    }
+
+
+    private async Task DepartmentChanged(int departmentId)
+    {
+        course.DepartmentId = departmentId;
+
+        // Clear the previously selected teacher.
+        // The old teacher may belong to the previous department.
+        course.TeacherId = null;
+
+
+        if (departmentId <= 0)
+        {
+            teachers =
+                Enumerable.Empty<TeacherLookupDto>();
+
+            return;
+        }
+
+
+        teachers =
+            await TeacherService
+                .GetLookupAsync(departmentId);
+    }
+
+
+    private async Task Save()
+    {
+        Console.WriteLine("Save Clicked!");
+
+
+        var result =
+            await CourseService
+                .CreateAsync(course);
+
+
+        if (result.Success)
+        {
+            Notification.Success(
+                "Course saved successfully.");
+
+            Navigation.NavigateTo("/courses");
+        }
+        else
+        {
+            Notification.Error(
+                result.Message);
+        }
+    }
+
+
+    private Task GoBack()
+    {
+        Navigation.NavigateTo("/courses");
+
+        return Task.CompletedTask;
+    }
+
+}
