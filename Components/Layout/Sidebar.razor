@@ -1,3 +1,4 @@
+
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
@@ -15,7 +16,7 @@
     <div class="sidebar-brand">
 
         <div class="brand-icon">
-            🎓
+            <i class="bi bi-mortarboard-fill" aria-hidden="true"></i>
         </div>
 
         <div>
@@ -30,124 +31,129 @@
 
     </div>
 
-
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" aria-label="Main navigation">
 
         <!-- Dashboard -->
 
         <AuthorizeView>
-
             <Authorized>
 
-                <NavLink href="/dashboard" Match="NavLinkMatch.All" class="sidebar-link">
+                <NavLink href="/dashboard"
+                         Match="NavLinkMatch.All"
+                         class="sidebar-link">
 
-                    <span class="sidebar-icon">🏠</span>
+                    <span class="sidebar-icon">
+                        <i class="bi bi-grid-1x2-fill" aria-hidden="true"></i>
+                    </span>
 
                     <span>Dashboard</span>
 
                 </NavLink>
 
             </Authorized>
-
         </AuthorizeView>
 
 
         <!-- Academic -->
 
         <div class="sidebar-section">
-            <AuthorizeView Policy="@Permissions.Students.View">
 
+            <AuthorizeView Policy="@Permissions.Students.View">
                 <Authorized>
 
                     <div class="sidebar-section-title">
                         Academic
                     </div>
-                </Authorized>
 
+                </Authorized>
             </AuthorizeView>
 
-            <AuthorizeView Policy="@Permissions.Students.View">
 
+            <AuthorizeView Policy="@Permissions.Students.View">
                 <Authorized>
 
                     <NavLink href="/students" class="sidebar-link">
 
-                        <span class="sidebar-icon">👨‍🎓</span>
+                        <span class="sidebar-icon">
+                            <i class="bi bi-mortarboard" aria-hidden="true"></i>
+                        </span>
 
                         <span>Students</span>
 
                     </NavLink>
 
                 </Authorized>
-
             </AuthorizeView>
 
 
             <AuthorizeView Policy="@Permissions.Teachers.View">
-
                 <Authorized>
 
-                    <NavLink href="/administration/teachers" class="sidebar-link">
+                    <NavLink href="/administration/teachers"
+                             class="sidebar-link">
 
-                        <span class="sidebar-icon">👨‍🏫</span>
+                        <span class="sidebar-icon">
+                            <i class="bi bi-person-workspace" aria-hidden="true"></i>
+                        </span>
 
                         <span>Teachers</span>
 
                     </NavLink>
 
                 </Authorized>
-
             </AuthorizeView>
 
 
             <AuthorizeView Policy="@Permissions.Departments.View">
-
                 <Authorized>
 
-                    <NavLink href="/administration/departments" class="sidebar-link">
+                    <NavLink href="/administration/departments"
+                             class="sidebar-link">
 
-                        <span class="sidebar-icon">🏢</span>
+                        <span class="sidebar-icon">
+                            <i class="bi bi-buildings" aria-hidden="true"></i>
+                        </span>
 
                         <span>Departments</span>
 
                     </NavLink>
 
                 </Authorized>
-
             </AuthorizeView>
 
 
             <AuthorizeView Policy="@Permissions.Courses.View">
-
                 <Authorized>
 
                     <NavLink href="/courses" class="sidebar-link">
 
-                        <span class="sidebar-icon">📚</span>
+                        <span class="sidebar-icon">
+                            <i class="bi bi-book" aria-hidden="true"></i>
+                        </span>
 
                         <span>Courses</span>
 
                     </NavLink>
 
                 </Authorized>
-
             </AuthorizeView>
 
 
             <AuthorizeView Policy="@Permissions.Students.Enrollment">
-
                 <Authorized>
 
-                    <NavLink href="/enrollments" class="sidebar-link">
+                    <NavLink href="/enrollments"
+                             class="sidebar-link">
 
-                        @*<span class="sidebar-icon">📝</span>
+                        <span class="sidebar-icon">
+                            <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+                        </span>
 
-                        <span>Enrollments</span> *@
+                        <span>Enrollments</span>
 
                     </NavLink>
 
                 </Authorized>
-
             </AuthorizeView>
 
         </div>
@@ -156,23 +162,23 @@
         <!-- Reports -->
 
         <AuthorizeView Policy="@Permissions.Reports.View">
-
             <Authorized>
+
                 <div class="sidebar-section">
 
-                    <button type="button" class="sidebar-section-toggle" @onclick="ToggleReports"
-                            aria-expanded="@reportsExpanded" aria-controls="reports-submenu">
+                    <button type="button"
+                            class="sidebar-section-toggle"
+                            @onclick="ToggleReports"
+                            aria-expanded="@reportsExpanded"
+                            aria-controls="reports-submenu">
 
                         <span class="sidebar-section-title">
-
-                            <span>
-                                Reports
-                            </span>
-
+                            Reports
                         </span>
 
                         <span class="sidebar-chevron">
-                            @(reportsExpanded ? "▾" : "▸")
+                            <i class="bi @(reportsExpanded ? "bi-chevron-down" : "bi-chevron-right")"
+                               aria-hidden="true"></i>
                         </span>
 
                     </button>
@@ -180,30 +186,41 @@
 
                     @if (reportsExpanded)
                     {
-                        <div class="sidebar-submenu" id="reports-submenu" role="region" aria-label="Reports submenu">
+                        <div class="sidebar-submenu"
+                             id="reports-submenu"
+                             role="region"
+                             aria-label="Reports submenu">
 
+                            <NavLink href="/reports/departments"
+                                     class="sidebar-link sidebar-child">
 
-                            <NavLink href="/reports/departments" class="sidebar-link sidebar-child">
-
-                                <span class="sidebar-icon">🏢</span>
+                                <span class="sidebar-icon">
+                                    <i class="bi bi-building" aria-hidden="true"></i>
+                                </span>
 
                                 <span>Department Report</span>
 
                             </NavLink>
 
 
-                            <NavLink href="/reports/enrollments" class="sidebar-link sidebar-child">
+                            <NavLink href="/reports/enrollments"
+                                     class="sidebar-link sidebar-child">
 
-                                <span class="sidebar-icon">📝</span>
+                                <span class="sidebar-icon">
+                                    <i class="bi bi-file-earmark-bar-graph" aria-hidden="true"></i>
+                                </span>
 
                                 <span>Enrollment Report</span>
 
                             </NavLink>
 
 
-                            <NavLink href="/reports/academic-performance" class="sidebar-link sidebar-child">
+                            <NavLink href="/reports/academic-performance"
+                                     class="sidebar-link sidebar-child">
 
-                                <span class="sidebar-icon">🎓</span>
+                                <span class="sidebar-icon">
+                                    <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                                </span>
 
                                 <span>Academic Performance</span>
 
@@ -215,90 +232,95 @@
                 </div>
 
             </Authorized>
-
         </AuthorizeView>
 
 
         <!-- Administration -->
 
         <div class="sidebar-section">
-            <AuthorizeView Policy="@Permissions.Users.View">
 
+            <AuthorizeView Policy="@Permissions.Users.View">
                 <Authorized>
 
-                    <button type="button" class="sidebar-section-toggle" @onclick="ToggleAdministration"
-                            aria-expanded="@administrationExpanded" aria-controls="admin-submenu">
+                    <button type="button"
+                            class="sidebar-section-toggle"
+                            @onclick="ToggleAdministration"
+                            aria-expanded="@administrationExpanded"
+                            aria-controls="admin-submenu">
 
                         <span class="sidebar-section-title">
-
-                            <span>
-                                Administration
-                            </span>
-
+                            Administration
                         </span>
 
                         <span class="sidebar-chevron">
-                            <i class="bi bi-chevron-down ms-2"></i>
+                            <i class="bi @(administrationExpanded ? "bi-chevron-down" : "bi-chevron-right")"
+                               aria-hidden="true"></i>
                         </span>
 
                     </button>
+
                 </Authorized>
-
             </AuthorizeView>
-
 
 
             @if (administrationExpanded)
             {
-                <div class="sidebar-submenu" id="admin-submenu" role="region" aria-label="Administration submenu">
+                <div class="sidebar-submenu"
+                     id="admin-submenu"
+                     role="region"
+                     aria-label="Administration submenu">
 
                     <AuthorizeView Policy="@Permissions.Users.View">
-
                         <Authorized>
 
-                            <NavLink href="/administration/users" class="sidebar-link sidebar-child">
+                            <NavLink href="/administration/users"
+                                     class="sidebar-link sidebar-child">
 
-                                <span class="sidebar-icon">👥</span>
+                                <span class="sidebar-icon">
+                                    <i class="bi bi-people" aria-hidden="true"></i>
+                                </span>
 
                                 <span>Users</span>
 
                             </NavLink>
 
                         </Authorized>
-
                     </AuthorizeView>
 
 
                     <AuthorizeView Policy="@Permissions.Roles.Manage">
-
                         <Authorized>
 
-                            <NavLink href="/administration/roles" class="sidebar-link sidebar-child">
+                            <NavLink href="/administration/roles"
+                                     class="sidebar-link sidebar-child">
 
-                                <span class="sidebar-icon">🛡</span>
+                                <span class="sidebar-icon">
+                                    <i class="bi bi-shield-check" aria-hidden="true"></i>
+                                </span>
 
                                 <span>Roles</span>
 
                             </NavLink>
 
                         </Authorized>
-
                     </AuthorizeView>
 
 
                     <AuthorizeView Policy="@Permissions.Security.Manage">
-
                         <Authorized>
 
-                            <NavLink href="/administration/permissions" class="sidebar-link sidebar-child">
+                            <NavLink href="/administration/permissions"
+                                     class="sidebar-link sidebar-child">
 
-                                @*<span class="sidebar-icon">🔐</span>
-                               <span>Permissions</span> *@
+                                <span class="sidebar-icon">
+                                    <i class="bi bi-key" aria-hidden="true"></i>
+                                </span>
+
+                                <span>Permissions</span>
 
                             </NavLink>
 
                         </Authorized>
-
                     </AuthorizeView>
 
                 </div>
@@ -308,6 +330,8 @@
 
     </nav>
 
+
+    <!-- Sidebar footer -->
 
     <div class="sidebar-footer">
 
@@ -366,9 +390,13 @@
     {
         var path = Navigation.ToBaseRelativePath(Navigation.Uri);
 
-        reportsExpanded = path.StartsWith("reports/", StringComparison.OrdinalIgnoreCase);
+        reportsExpanded = path.StartsWith(
+            "reports/",
+            StringComparison.OrdinalIgnoreCase);
 
-        administrationExpanded = path.StartsWith("administration/", StringComparison.OrdinalIgnoreCase);
+        administrationExpanded = path.StartsWith(
+            "administration/",
+            StringComparison.OrdinalIgnoreCase);
     }
 
 
